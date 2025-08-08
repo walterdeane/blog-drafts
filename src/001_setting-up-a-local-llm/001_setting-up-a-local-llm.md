@@ -10,6 +10,7 @@ Here's why that felt worth doing:
 
 * **Privacy**: I don’t want to send every line of source code or config out to a cloud service, especially for work projects or NDA-bound clients. Also while this tutorial is primarily focused on a local llm for coding it can also be used as a personal GPT so privacy becomes more of an issue.
 * **Cost**: LLMs aren’t cheap if you’re using them seriously. A few bucks here and there becomes a bill pretty quickly. As an individual developing at home  outside of work I appreciate how Gen AI can help me with projects that are challenging to do on your own, but my wife is not going to be happy if my credit card starts getting pummelled by fees from OpenAI or Anthropic or whatever new LLM pops up. Outside of my day job, most of my coding is for fun or  for open source so I want to keep the cost down. The other trend that is starting to happen is that the preview pricing is starting to run out and using the big models are suddenly not as free as we thought.
+* **Cost**: LLMs aren’t cheap if you’re using them seriously. A few bucks here and there becomes a bill pretty quickly. As an individual developing at home  outside of work I appreciate how Gen AI can help me with projects that are challenging to do on your own, but my wife is not going to be happy if my credit card starts getting pummelled by fees from OpenAI or Anthropic or whatever new LLM pops up. Outside of my day job, most of my coding is for fun or  for open source so I want to keep the cost down. The other trend that is starting to happen is that the preview pricing is starting to run out and using the big models are suddenly not as free as we thought.
 * **Uptime and token limits**: It’s easy to build something cool with GPT-4... right up until you hit your rate limit, the API goes down, or your token quota runs out. You run the risk of losing tools that  you are becoming overly dependent on. That’s a blog for another day.
 * **Environmental impact**: Running a smaller model locally is often far more efficient than streaming requests back and forth to a massive data center. Right now, most of the GenAI industry is focused on building larger and more expensive models with ever-growing parameter counts. These models demand enormous power just to operate, and their energy cost per interaction adds up quickly. If we’re not careful, we’ll end up scaling inefficiency into everything. We need to start thinking seriously about how to get good enough results from models that don’t require server racks and carbon offsets just to answer a prompt.
 * **Control**: I like knowing what’s going on under the hood. I don’t want a black box that only works if I follow someone else’s workflow. I want to shape the way I work, automate the boring parts, and experiment without waiting for someone to approve a SaaS license or unblock a firewall. At work, I don’t always get to make those decisions—but on my own machine, I do. My laptop, my rules.
@@ -57,7 +58,15 @@ Or grab the `.dmg` from the website and install it manually.
 ollama run mistral
 ```
 
-This should launch a small REPL-like interface. You can start typing, and it’ll respond. That proves the model’s working.
+This should launch a small REPL-like interface. You can start typing, and it’ll respond. That proves the model’s running.
+
+To verify that the server is active and listening, open a new terminal and run:
+
+```bash
+curl http://localhost:11434/api/tags
+```
+
+If everything’s working, you’ll get a JSON list of installed models.
 
 If you want a smaller or more efficient model:
 
@@ -73,10 +82,35 @@ I’ve tried both Cursor and VS Code. Either works. Cursor is purpose-built for 
 
 #### Option A: Cursor
 
-* Download from cursor.sh
-* Open your project
-* It should automatically detect Ollama and let you run prompts using your local model
-* You can add your own prompt templates for tasks like "generate a README from this code"
+Cursor works well with local LLMs, but connecting it to a local Ollama server does require some setup. By default, Cursor expects an accessible, network-routable endpoint—which `localhost` alone doesn't satisfy unless you expose it externally or modify local DNS.
+
+You have a couple of options to make this work:
+
+**Option 1: Use ngrok to expose Ollama externally**
+
+We’re not covering full ngrok setup in this guide, but if you want to use Cursor with your local model from another machine—or even while you're away from home—ngrok is one way to do it. It creates a secure tunnel from the internet to your local machine.
+
+That said, opening access to your machine comes with security implications. You should only use this approach if you're comfortable with managing access and authentication. A future post will walk through the setup in more detail, including how to secure it properly.
+
+**Option 2: Modify your ********************************************************************************`/etc/hosts`******************************************************************************** to alias a name to localhost**
+
+You can create a hostname like `ollama.local` pointing to `127.0.0.1`. This works well with tools that reject `localhost`:
+
+```bash
+echo '127.0.0.1 ollama.local' | sudo tee -a /etc/hosts
+```
+
+Then configure Cursor with:
+
+```json
+{
+  "provider": "ollama",
+  "model": "mistral",
+  "endpoint": "http://ollama.local:11434"
+}
+```
+
+Once configured, Cursor will let you run prompts from your local model, edit and test code completions, and integrate your own templates.
 
 #### Option B: VS Code
 
@@ -134,6 +168,59 @@ You’ll see a chat UI where you can talk to your local model—just like you wo
 You can select which model to use (like Mistral or Phi-3), adjust temperature settings, and drop in your own prompt templates. This is great for writing documentation, testing prompt variants, or just exploring how far you can push a small model locally.
 
 It’s a nice complement to using LLMs from the command line or your editor—and it’s fast, private, and free.
+
+### Bonus: One-Line Script to Install Everything
+
+If you want to automate the entire setup—from installing Docker and Ollama to pulling a model and launching Open WebUI—you can use this script. Copy and paste it into a file (e.g., `setup-llm.sh`), make it executable, and run it.
+
+```bash
+#!/bin/bash
+
+set -e
+
+echo "📦 Installing Homebrew (if needed)..."
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || true
+
+echo "🐳 Installing Docker Desktop..."
+brew install --cask docker
+
+echo "⏳ Starting Docker (wait until it finishes initializing)..."
+open -a Docker
+while ! docker system info > /dev/null 2>&1; do
+  sleep 1
+done
+
+echo "🧠 Installing Ollama..."
+brew install ollama
+ollama serve &
+
+echo "⬇️ Pulling LLM (LLaMA3 by default)..."
+ollama pull llama3
+
+echo "🧰 Setting up Open WebUI with Docker Compose..."
+mkdir -p ~/open-webui && cd ~/open-webui
+
+cat <<EOF > docker-compose.yml
+version: "3.8"
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "3000:3000"
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - OLLAMA_API_BASE_URL=http://localhost:11434
+    restart: unless-stopped
+
+volumes:
+  open-webui-data:
+EOF
+
+docker compose up -d
+
+echo "✅ Setup complete! Visit http://localhost:3000 in your browser."
+```
 
 ### Final Thoughts
 
