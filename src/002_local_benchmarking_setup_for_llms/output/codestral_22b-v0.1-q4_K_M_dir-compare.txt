@@ -1,0 +1,50 @@
+⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠧ ⠏ ⠏ ⠙ ⠹ ⠹ ⠸ ⠴ ⠴ ⠧ ⠧ ⠇ ⠏ ⠙ ⠙ ⠸ ⠼ ⠼ ⠦ ⠦ ⠇ ⠇ ⠋ ⠋ ⠹ ⠹ ⠸ ⠴ ⠴ ⠦ ⠇ ⠇ ⠏ ⠋ ⠹ ⠹ ⠼ ⠼ ⠴ ⠧ ⠧ ⠏ ⠏ ⠋ ⠙ ⠸ ⠸ ⠼ ⠴ ⠦ ⠧ ⠏ ⠏ ⠙ ⠹ ⠹ ⠸ ⠴ ⠦ ⠧ ⠧ ⠏ ⠏ ⠋ ⠙ ⠹ ⠼ ⠴ ⠴ ⠧ ⠧ ⠏ ⠏ ⠙ ⠹ ⠸ ⠸ ⠼ ⠦ ⠦ ⠇ ⠇ ⠋ ⠋ ⠙ ⠹ ⠼ ⠼ ⠦ ⠦ ⠧ ⠏ ⠏ ⠋ ⠹ ⠹ ⠸ ⠴ ⠴ ⠦ ⠇ ⠇ ⠋ ⠙ ⠙ ⠹ ⠼ ⠴ ⠴ ⠦ ⠇ ⠏ ⠏ ⠙ ⠙ ⠸ ⠸ ⠴ ⠦ ⠦ ⠇ ⠇ ⠏ ⠙ ⠙ ⠸ ⠸ ⠼ ⠦ ⠧ ⠧ ⠇ ⠋ ⠙ ⠹ ⠹ ⠼ ⠴ ⠦ ⠧ ⠧ ⠇ ⠏ ⠙ ⠙  Here is a simple example of how you can create such a class:
+
+```java
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+public class DirectoryComparator {
+
+    public static void main(String[] args) throws IOException {
+        Path dir1 = Paths.get("/path/to/directory1");
+        Path dir2 = Paths.get("/path/to/directory2");
+        compareDirectories(dir1, dir2);
+    }
+
+    public static void compareDirectories(Path dir1, Path dir2) throws IOException {
+        Set<String> filesInDir1 = new HashSet<>();
+        Files.walkFileTree(dir1, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                String relativeFilePath = dir1.relativize(file).toString();
+                filesInDir1.add(relativeFilePath);
+                return super.visitFile(file, attrs);
+            }
+        });
+
+        Files.walkFileTree(dir2, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                String relativeFilePath = dir2.relativize(file).toString();
+                if (!filesInDir1.contains(relativeFilePath)) {
+                    System.out.println("Added: " + relativeFilePath);
+                } else if (Files.size(dir1.resolve(relativeFilePath)) != Files.size(dir2.resolve(relativeFilePath))) {
+                    System.out.println("Modified: " + relativeFilePath);
+                }
+                filesInDir1.remove(relativeFilePath);
+                return super.visitFile(file, attrs);
+            }
+        });
+
+        for (String file : filesInDir1) {
+            System.out.println("Removed: " + file);
+        }
+    }
+}
+```
+   This class uses `Files.walkFileTree()`, which recursively traverses the directory tree starting from a given path, and accepts a custom implementation of `FileVisitor`. It first visits all files in `dir1` to store them into a Set. Then it visits all files in `dir2`. If a file doesn't exist in `dir1`, it's considered added; if the size is different, it's considered modified. After that, any remaining files in `dir1` are considered removed. This comparison only checks for additions, removals and modifications based on file size. For more accurate results, you may want to compare other attributes such as last modification time.

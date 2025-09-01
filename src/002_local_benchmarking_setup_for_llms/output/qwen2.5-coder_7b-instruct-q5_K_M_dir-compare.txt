@@ -1,0 +1,67 @@
+⠙ ⠙ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠏ ⠙ ⠹ ⠸ ⠸ ⠴ ⠦ ⠧ ⠇ ⠏ ⠏ ⠋ ⠙ ⠸ ⠸ ⠴ ⠴ ⠦ ⠧ ⠇ ⠏ ⠙ ⠙ ⠹ ⠸ ⠼ ⠦ ⠦ ⠧ ⠏ ⠋ ⠋ Here is a simple example of how to implement such a functionality:
+
+```Java
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
+
+public class DirectoryComparator {
+
+    public static Map<String, String> compareDirectories(Path dir1, Path dir2) throws IOException {
+        Map<String, String> comparisonResult = new HashMap<>();
+
+        Files.walk(dir1).forEach(path -> {
+            try {
+                Path relativePath = dir1.relativize(path);
+                Path pathInDir2 = dir2.resolve(relativePath);
+
+                if (!Files.exists(pathInDir2)) { // If the file does not exist in the second directory
+                    comparisonResult.put(path.toString(), "Added");
+                } else {
+                    long lastModifiedTimeInDir1 = Files.getLastModifiedTime(path).toMillis();
+                    long lastModifiedTimeInDir2 = Files.getLastModifiedTime(pathInDir2).toMillis();
+
+                    if (lastModifiedTimeInDir1 != lastModifiedTimeInDir2) { // If the file has been modified
+                        comparisonResult.put(path.toString(), "Modified");
+                    }
+                }
+
+            } catch (IOException e) {
+                System.err.println("Error occurred while comparing files: " + path);
+            }
+        });
+
+        Files.walk(dir2).forEach(path -> {
+            try {
+                Path relativePath = dir2.relativize(path);
+                Path pathInDir1 = dir1.resolve(relativePath);
+
+                if (!Files.exists(pathInDir1)) { // If the file does not exist in the first directory
+                    comparisonResult.put(path.toString(), "Removed");
+                }
+            } catch (IOException e) {
+                System.err.println("Error occurred while comparing files: " + path);
+            }
+        });
+
+        return comparisonResult;
+    }
+
+    public static void main(String[] args) {
+        try {
+            Map<String, String> result = compareDirectories(Paths.get("/path/to/dir1"), Paths.get("/path/to/dir2"));
+            for (Map.Entry<String, String> entry : result.entrySet()) {
+                System.out.println(entry.getKey() + " is " + entry.getValue());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+```
+
+This program uses `Files.walk()` to traverse the directories and compare their contents. If a file exists in one directory but not the other, it's marked as either 'Added' or 'Removed'. If both files exist, it checks if they have been modified by comparing their last modification times.
+
+Please replace "/path/to/dir1" and "/path/to/dir2" with your actual directories path.
+Remember that this code doesn't compare directory structure. It only compares the content of each file in the two directories. Also, it does not handle symbolic links or special files (like sockets, devices, etc.).

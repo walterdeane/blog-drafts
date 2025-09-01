@@ -15,7 +15,9 @@ if ! command -v ollama >/dev/null 2>&1; then
   curl -fsSL https://ollama.com/install.sh | sh
 fi
 
+
 echo "Pulling DeepSeek Coder model..."
+# what is the best 
 ollama pull deepseek-coder-v2:16b-lite-instruct-q4_K_M
 
 echo "Setting up Open WebUI..."

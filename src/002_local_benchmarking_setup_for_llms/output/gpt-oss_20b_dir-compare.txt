@@ -1,0 +1,256 @@
+⠙ ⠹ ⠸ ⠼ ⠼ ⠦ ⠦ ⠇ ⠏ ⠋ ⠋ ⠹ ⠹ ⠼ ⠴ ⠴ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ Thinking...
+We need to produce a Java class that recursively compares two directories using java.nio.file, returning added, removed, or modified files. Should define methods to traverse both directories and produce lists of differences. Provide example usage. Might include a small test harness. The question: "Write a Java class that recursively compares two directories using java.nio.file. Return added, removed, or modified files." So we need to produce a Java class that can compare two directories recursively and identify files that are added (present in dir2 but not dir1), removed (present in dir1 but not dir2), modified (present in both but contents differ). Use java.nio.file, maybe Files.walkFileTree, etc. Return as a Map or a custom data structure listing categories. Could have methods: compare(Path dir1, Path dir2) returns a Difference object containing lists of added, removed, modified. Or maybe just print differences.
+
+We need to return lists of file relative paths for each category.
+
+Implementation details: Use a Map<String, Path> to track relative paths and content hash or modification time. For modified detection, compare file sizes and last modified times or compute checksums. For simplicity, compute file size and last modified timestamp; if they differ, mark as modified. But safer: compute SHA-256. But that could be heavy. For demonstration, maybe use size+modified.
+
+We can use Files.walkFileTree to get all relative paths in dir1 and dir2.
+
+Algorithm: Walk dir1, store relative path and file attributes in a Map<String, FileInfo>. Walk dir2, for each relative path, check if exists in map; if yes, compare; else, added. After walking dir2, iterate over map entries: if entry not matched (i.e., present only in dir1), it's removed. Alternatively, maintain sets.
+
+Define class FileInfo: path, size, lastModified, maybe hash.
+
+Define class DirectoryComparator with compare method. Use Path arguments.
+
+Return a Result object: List<Path> added, removed, modified.
+
+Should be thread-safe? Not necessary.
+
+Also handle symlinks? Possibly ignore.
+
+Edge cases: directories only; should ignore directories themselves? Probably only compare files, not directories. But we can include directories as part of relative path; if a directory present in dir2 but not dir1, that's considered added? But usually differences apply to files. We can decide to only compare files.
+
+We'll produce a final code snippet with comments. Provide a main method to test. Use standard Java 8+.
+
+Let's craft the final answer. Provide code block with imports, classes. Provide documentation.
+
+Let's produce.
+...done thinking.
+
+Below is a **stand‑alone** Java class called `DirectoryComparator`.  
+It walks both directories recursively with `java.nio.file` APIs, builds a map of
+relative file names to file metadata, and finally produces three lists:
+
+| Category | Meaning |
+|----------|---------|
+| `added`  | Files that exist in *dir2* but not in *dir1*. |
+| `removed`| Files that exist in *dir1* but not in *dir2*. |
+| `modified`| Files that exist in both directories but whose contents differ. |
+
+The example uses a simple SHA‑256 checksum to decide if a file was modified.
+That guarantees a correct answer even when size and last‑modified time happen
+to be the same.  
+Feel free to replace the checksum with any other comparison you prefer.
+
+```java
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.security.DigestInputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.math.BigInteger;
+
+/**
+ * Recursively compares two directories and reports added, removed, and modified files.
+ *
+ * <p>Usage example:
+ * <pre>
+ *   Path dir1 = Paths.get("C:/first");
+ *   Path dir2 = Paths.get("C:/second");
+ *   DirectoryComparator.Result diff = DirectoryComparator.compare(dir1, dir2);
+ *   System.out.println("Added:   " + diff.added);
+ *   System.out.println("Removed: " + diff.removed);
+ *   System.out.println("Modified:" + diff.modified);
+ * </pre>
+ */
+public class DirectoryComparator {
+
+    /**
+     * Represents the comparison result.
+     */
+    public static class Result {
+        public final List<Path> added;
+        public final List<Path> removed;
+        public final List<Path> modified;
+
+        public Result(List<Path> added, List<Path> removed, List<Path> modified) {
+            this.added = added;
+            this.removed = removed;
+            this.modified = modified;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Added: %d, Removed: %d, Modified: %d",
+                    added.size(), removed.size(), modified.size());
+        }
+    }
+
+    /**
+     * Internal representation of a file's metadata.
+     */
+    private static class FileInfo {
+        final Path absolutePath;
+        final String relativePath; // relative to the root directory being scanned
+        final long size;
+        final long lastModified;
+        final String checksum; // SHA‑256 in hex
+
+        FileInfo(Path absolutePath, Path root, MessageDigest md) throws IOException {
+            this.absolutePath = absolutePath;
+            this.relativePath = root.relativize(absolutePath).toString().replace("\\", "/");
+            BasicFileAttributes attr = Files.readAttributes(absolutePath, BasicFileAttributes.class);
+            this.size = attr.size();
+            this.lastModified = attr.lastModifiedTime().toMillis();
+            this.checksum = computeChecksum(absolutePath, md);
+        }
+
+        private static String computeChecksum(Path file, MessageDigest md) throws IOException {
+            try (DigestInputStream dis = new DigestInputStream(Files.newInputStream(file), md)) {
+                byte[] buffer = new byte[8192];
+                while (dis.read(buffer) != -1) {
+                    // reading file updates the digest
+                }
+            }
+            byte[] digest = md.digest();
+            return String.format("%064x", new BigInteger(1, digest));
+        }
+    }
+
+    /**
+     * Compares two directories and returns the differences.
+     *
+     * @param dir1 the first directory (baseline)
+     * @param dir2 the second directory (target)
+     * @return a Result object containing lists of added, removed, and modified files
+     * @throws IOException if an I/O error occurs
+     */
+    public static Result compare(Path dir1, Path dir2) throws IOException {
+        if (!Files.isDirectory(dir1) || !Files.isDirectory(dir2)) {
+            throw new IllegalArgumentException("Both arguments must be directories");
+        }
+
+        // Maps: relativePath -> FileInfo
+        Map<String, FileInfo> map1 = new HashMap<>();
+        Map<String, FileInfo> map2 = new HashMap<>();
+
+        MessageDigest md1 = java.security.MessageDigest.getInstance("SHA-256");
+        MessageDigest md2 = java.security.MessageDigest.getInstance("SHA-256");
+
+        // Walk dir1
+        Files.walkFileTree(dir1, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!attrs.isRegularFile()) return FileVisitResult.CONTINUE;
+                map1.put(dir1.relativize(file).toString().replace("\\", "/"),
+                        new FileInfo(file, dir1, md1));
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        // Walk dir2
+        Files.walkFileTree(dir2, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!attrs.isRegularFile()) return FileVisitResult.CONTINUE;
+                String rel = dir2.relativize(file).toString().replace("\\", "/");
+                map2.put(rel, new FileInfo(file, dir2, md2));
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        List<Path> added = new ArrayList<>();
+        List<Path> removed = new ArrayList<>();
+        List<Path> modified = new ArrayList<>();
+
+        // Files that exist only in dir2 → added
+        for (String rel : map2.keySet()) {
+            if (!map1.containsKey(rel)) {
+                added.add(Paths.get(rel));
+            }
+        }
+
+        // Files that exist only in dir1 → removed
+        for (String rel : map1.keySet()) {
+            if (!map2.containsKey(rel)) {
+                removed.add(Paths.get(rel));
+            }
+        }
+
+        // Files present in both → compare checksum
+        for (String rel : map1.keySet()) {
+            if (map2.containsKey(rel)) {
+                FileInfo f1 = map1.get(rel);
+                FileInfo f2 = map2.get(rel);
+                if (!f1.checksum.equals(f2.checksum)) {
+                    modified.add(Paths.get(rel));
+                }
+            }
+        }
+
+        // Sort for deterministic output
+        Comparator<Path> cmp = Comparator.comparing(Path::toString);
+        added.sort(cmp);
+        removed.sort(cmp);
+        modified.sort(cmp);
+
+        return new Result(added, removed, modified);
+    }
+
+    /* ====================== demo main ====================== */
+    public static void main(String[] args) throws Exception {
+        if (args.length != 2) {
+            System.err.println("Usage: java DirectoryComparator <dir1> <dir2>");
+            System.exit(1);
+        }
+        Path d1 = Paths.get(args[0]).toAbsolutePath();
+        Path d2 = Paths.get(args[1]).toAbsolutePath();
+
+        System.out.println("Comparing:");
+        System.out.println("  dir1: " + d1);
+        System.out.println("  dir2: " + d2);
+        System.out.println();
+
+        Result diff = compare(d1, d2);
+
+        System.out.println(diff);
+        System.out.println();
+
+        System.out.println("Added files:");
+        diff.added.forEach(p -> System.out.println("  + " + p));
+        System.out.println("Removed files:");
+        diff.removed.forEach(p -> System.out.println("  - " + p));
+        System.out.println("Modified files:");
+        diff.modified.forEach(p -> System.out.println("  * " + p));
+    }
+}
+```
+
+### How it works
+
+1. **Collect file information**  
+   `Files.walkFileTree` is used to iterate over every file in each directory.
+   For each file we store:
+   * Its relative path (used as a key in the maps)
+   * Size and last‑modified timestamp (for quick early exit if desired)
+   * SHA‑256 checksum (to detect real content changes).
+
+2. **Detect differences**  
+   * **Added** – key present in *dir2* but not in *dir1*.  
+   * **Removed** – key present in *dir1* but not in *dir2*.  
+   * **Modified** – key present in both but checksums differ.
+
+3. **Return a `Result` object**  
+   The three lists (`added`, `removed`, `modified`) are sorted for a deterministic
+   order, which is handy for unit tests or user‑friendly output.
+
+### Customisation
+
+* Replace the SHA‑256 checksum with a simple size + timestamp comparison if speed is critical and the risk of hash collisions is acceptable.
+* Change the `Result` class to hold full `Path` objects, relative paths, or custom data objects.
+* Add support for symbolic links or other file types if needed.
+
+The class is fully self‑contained and can be dropped into any project that uses Java 8 or newer.

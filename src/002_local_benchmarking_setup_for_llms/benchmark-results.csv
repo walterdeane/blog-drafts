@@ -1,0 +1,9 @@
+2025-08-26T05:17:51Z,gpt-oss:20b,dir-compare,success,598.513239000,output/gpt-oss_20b_dir-compare.txt
+2025-08-26T05:24:40Z,codestral:22b-v0.1-q4_K_M,dir-compare,success,385.221972000,output/codestral_22b-v0.1-q4_K_M_dir-compare.txt
+2025-08-26T05:28:42Z,codellama:13b-instruct-q5_K_M,dir-compare,success,229.379518000,output/codellama_13b-instruct-q5_K_M_dir-compare.txt
+2025-08-26T05:50:30Z,qwen2.5-coder:14b-instruct-q4_K_M,dir-compare,success,295.482363000,output/qwen2.5-coder_14b-instruct-q4_K_M_dir-compare.txt
+2025-08-26T05:52:37Z,deepseek-coder-v2:16b-lite-instruct-q4_K_M,dir-compare,success,120.698769000,output/deepseek-coder-v2_16b-lite-instruct-q4_K_M_dir-compare.txt
+2025-08-26T05:54:38Z,qwen2.5-coder:7b-instruct-q5_K_M,dir-compare,success,110.907496000,output/qwen2.5-coder_7b-instruct-q5_K_M_dir-compare.txt
+2025-08-26T05:57:16Z,qwen2.5-coder:7b-instruct-q4_K_M,dir-compare,success,147.387979000,output/qwen2.5-coder_7b-instruct-q4_K_M_dir-compare.txt
+2025-09-01T02:13:40Z,mistral:7b-instruct,dir-compare,success,256.691798000,output/mistral_7b-instruct_dir-compare.txt
+2025-09-01T02:51:32Z,mistral:7b-instruct,dir-compare,success,163.262302000,output/mistral_7b-instruct_dir-compare.txt

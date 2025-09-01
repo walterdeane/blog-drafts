@@ -1,0 +1,95 @@
+⠋ ⠹ ⠸ ⠼ ⠼ ⠦ ⠧ ⠇ ⠏ ⠏ ⠋ ⠹ ⠸ ⠼ ⠼ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ Certainly! Below is an example of how you could implement a Java class that uses `java.nio.file` to recursively compare two directories and identify added, removed, or modified files.
+
+```java
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+
+public class DirectoryComparator {
+
+    public static void main(String[] args) {
+        Path dir1 = Paths.get("/path/to/directory1");
+        Path dir2 = Paths.get("/path/to/directory2");
+
+        try {
+            Map<Path, FileChange> changes = compareDirectories(dir1, dir2);
+            for (Map.Entry<Path, FileChange> entry : changes.entrySet()) {
+                System.out.println(entry.getKey() + ": " + entry.getValue());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public enum FileChange {
+        ADDED,
+        REMOVED,
+        MODIFIED
+    }
+
+    public static Map<Path, FileChange> compareDirectories(Path dir1, Path dir2) throws IOException {
+        Set<Path> allFiles = new HashSet<>();
+        allFiles.addAll(listAllFiles(dir1));
+        allFiles.addAll(listAllFiles(dir2));
+
+        Map<Path, FileChange> changes = new HashMap<>();
+
+        for (Path file : allFiles) {
+            Path fileInDir1 = dir1.resolve(file);
+            Path fileInDir2 = dir2.resolve(file);
+
+            if (!Files.exists(fileInDir1)) {
+                changes.put(file, FileChange.ADDED);
+            } else if (!Files.exists(fileInDir2)) {
+                changes.put(file, FileChange.REMOVED);
+            } else {
+                BasicFileAttributes attrs1 = Files.readAttributes(fileInDir1, BasicFileAttributes.class);
+                BasicFileAttributes attrs2 = Files.readAttributes(fileInDir2, BasicFileAttributes.class);
+
+                if (!attrs1.lastModifiedTime().equals(attrs2.lastModifiedTime())) {
+                    changes.put(file, FileChange.MODIFIED);
+                }
+            }
+        }
+
+        return changes;
+    }
+
+    private static Set<Path> listAllFiles(Path dir) throws IOException {
+        final Set<Path> allFiles = new HashSet<>();
+        Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Path relativePath = dir.relativize(file);
+                allFiles.add(relativePath);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return allFiles;
+    }
+}
+```
+
+### Explanation:
+
+1. **Main Method**: 
+   - The `main` method initializes two paths, `dir1` and `dir2`, which are the directories to be compared.
+   - It then calls the `compareDirectories` method to compare these directories and prints out the changes.
+
+2. **FileChange Enum**:
+   - An enum `FileChange` is defined with three possible values: `ADDED`, `REMOVED`, and `MODIFIED`.
+
+3. **compareDirectories Method**:
+   - This method takes two paths (`dir1` and `dir2`) as input.
+   - It first lists all files in both directories using the `listAllFiles` helper method.
+   - It then compares each file to identify whether it was added, removed, or modified.
+
+4. **listAllFiles Method**:
+   - This helper method uses `Files.walkFileTree` to traverse the directory tree and collect all relative paths of files in a set.
+
+### Usage:
+- Replace `/path/to/directory1` and `/path/to/directory2` with the actual paths of the directories you want to compare.
+- Compile and run this program. It will print out the changes between the two directories.
+
+This class provides a simple way to compare two directories and identify file changes using Java's `java.nio.file` package.

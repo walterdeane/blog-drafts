@@ -1,0 +1,92 @@
+⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠏ ⠙ ⠙ ⠸ ⠼ ⠼ ⠦ ⠦ ⠇ ⠇ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠴ ⠧ ⠧ ⠏ ⠏ ⠙ ⠹ ⠹ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ Sure! Below is an example of a Java class that uses `java.nio.file` to recursively compare two directories and identify added, removed, or modified files.
+
+```java
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
+
+public class DirectoryComparator {
+
+    public static void main(String[] args) {
+        Path directory1 = Paths.get("path/to/directory1");
+        Path directory2 = Paths.get("path/to/directory2");
+
+        try {
+            compareDirectories(directory1, directory2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void compareDirectories(Path dir1, Path dir2) throws IOException {
+        List<Path> addedFiles = new ArrayList<>();
+        List<Path> removedFiles = new ArrayList<>();
+        Map<String, Path> dir1Files = new HashMap<>();
+        Map<String, Path> dir2Files = new HashMap<>();
+
+        // Collect files in the first directory
+        Files.walk(dir1)
+            .filter(Files::isRegularFile)
+            .forEach(path -> dir1Files.put(path.getFileName().toString(), path));
+
+        // Collect files in the second directory
+        Files.walk(dir2)
+            .filter(Files::isRegularFile)
+            .forEach(path -> dir2Files.put(path.getFileName().toString(), path));
+
+        // Identify removed and modified files
+        for (Map.Entry<String, Path> entry : dir1Files.entrySet()) {
+            String fileName = entry.getKey();
+            if (!dir2Files.containsKey(fileName)) {
+                removedFiles.add(entry.getValue());
+            } else {
+                Path fileInDir1 = entry.getValue();
+                Path fileInDir2 = dir2Files.get(fileName);
+                try {
+                    if (Files.getLastModifiedTime(fileInDir1).toMillis() != Files.getLastModifiedTime(fileInDir2).toMillis()) {
+                        removedFiles.add(fileInDir1);
+                        addedFiles.add(fileInDir2);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // Identify added files
+        for (Map.Entry<String, Path> entry : dir2Files.entrySet()) {
+            String fileName = entry.getKey();
+            if (!dir1Files.containsKey(fileName)) {
+                addedFiles.add(entry.getValue());
+            }
+        }
+
+        // Print the results
+        System.out.println("Added Files:");
+        addedFiles.forEach(System.out::println);
+
+        System.out.println("\nRemoved Files:");
+        removedFiles.forEach(System.out::println);
+    }
+}
+```
+
+### Explanation:
+
+1. **Collecting File Information:**
+   - The `compareDirectories` method first collects all regular files in both directories (`dir1` and `dir2`). It stores these files in two maps, where the key is the file name and the value is the file path.
+
+2. **Identifying Changes:**
+   - For each file in `dir1`, it checks if the file exists in `dir2`.
+     - If the file does not exist in `dir2`, it's considered a removed file.
+     - If the file exists, it compares the last modified time to see if there are any changes. If there are changes, it considers both files as added and removed (indicating they were moved or renamed).
+   - For each file in `dir2` that does not exist in `dir1`, it's considered an added file.
+
+3. **Printing Results:**
+   - The method prints the lists of added and removed files.
+
+### Usage:
+- Replace `"path/to/directory1"` and `"path/to/directory2"` with the actual paths of the directories you want to compare.
+- Run the program, and it will output the files that have been added, removed, or modified between the two directories.
+
+This class provides a basic comparison and can be extended further for more complex scenarios, such as comparing directory contents recursively or handling symbolic links.

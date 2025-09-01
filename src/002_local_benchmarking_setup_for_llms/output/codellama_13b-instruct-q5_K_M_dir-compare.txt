@@ -1,0 +1,61 @@
+⠙ ⠹ ⠸ ⠼ ⠼ ⠦ ⠧ ⠇ ⠏ ⠋ ⠋ ⠹ ⠸ ⠼ ⠴ ⠦ ⠦ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴  
+public class DirectoryComparator {
+    public static void main(String[] args) throws IOException {
+        Path dir1 = Paths.get("/path/to/dir1");
+        Path dir2 = Paths.get("/path/to/dir2");
+        
+        Map<String, FileStatus> fileMap1 = getFileMap(dir1);
+        Map<String, FileStatus> fileMap2 = getFileMap(dir2);
+        
+        List<Path> addedFiles = new ArrayList<>();
+        for (Entry<String, FileStatus> entry : fileMap2.entrySet()) {
+            if (!fileMap1.containsKey(entry.getKey())) {
+                addedFiles.add(entry.getValue().path);
+            }
+        }
+        
+        List<Path> removedFiles = new ArrayList<>();
+        for (Entry<String, FileStatus> entry : fileMap1.entrySet()) {
+            if (!fileMap2.containsKey(entry.getKey())) {
+                removedFiles.add(entry.getValue().path);
+            }
+        }
+        
+        List<Path> modifiedFiles = new ArrayList<>();
+        for (Entry<String, FileStatus> entry : fileMap1.entrySet()) {
+            if (!fileMap2.containsKey(entry.getKey())) {
+                modifiedFiles.add(entry.getValue().path);
+            }
+        }
+        
+        System.out.println("Added files: " + addedFiles);
+        System.out.println("Removed files: " + removedFiles);
+        System.out.println("Modified files: " + modifiedFiles);
+    }
+    
+    private static Map<String, FileStatus> getFileMap(Path dir) throws IOException {
+        Map<String, FileStatus> fileMap = new HashMap<>();
+        
+        Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
+                if (attrs.isRegularFile()) {
+                    fileMap.put(path.getFileName().toString(), new FileStatus(path, attrs));
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        
+        return fileMap;
+    }
+    
+    private static class FileStatus {
+        public final Path path;
+        public final BasicFileAttributes attrs;
+        
+        public FileStatus(Path path, BasicFileAttributes attrs) {
+            this.path = path;
+            this.attrs = attrs;
+        }
+    }
+}

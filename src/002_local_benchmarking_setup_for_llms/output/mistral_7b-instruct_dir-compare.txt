@@ -1,0 +1,80 @@
+⠋  To create a Java class that compares two directories and returns added, removed, or modified files, you can use the `java.nio.file` package. Here's an example of how to implement such a class:
+
+```java
+import java.io.IOException;
+import java.nio.file.*;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
+public class DirectoryComparator {
+    private Map<Path, FileTime> firstDirectory;
+    private Map<Path, FileTime> secondDirectory;
+
+    public DirectoryComparator(Path firstDirectory, Path secondDirectory) throws IOException {
+        this.firstDirectory = new TreeMap<>();
+        this.secondDirectory = new TreeMap<>();
+        this.firstDirectory.
+
+        Files.walkFileTree(firstDirectory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                firstDirectory.put(file, Files.getLastModifiedTime(file));
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        Files.walkFileTree(secondDirectory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                secondDirectory.put(file, Files.getLastModifiedTime(file));
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    public List<String> compare() throws IOException {
+        Set<Path> firstSet = firstDirectory.keySet();
+        Set<Path> secondSet = secondDirectory.keySet();
+
+        List<String> results = new ArrayList<>();
+
+        for (Path path : union(firstSet, secondSet)) {
+            FileTime firstFileTime = firstDirectory.getOrDefault(path, null);
+            FileTime secondFileTime = secondDirectory.getOrDefault(path, null);
+
+            if (firstFileTime == null && secondFileTime != null) {
+                results.add("Removed: " + path);
+            } else if (secondFileTime == null && firstFileTime != null) {
+                results.add("Added: " + path);
+            } else if (!firstFileTime.compareTo(secondFileTime, ChronoUnit.SECONDS) == 0) {
+                results.add("Modified: " + path);
+            }
+        }
+this.
+        return results;
+    }
+
+    private static <T> Set<T> union(Set<T> set1, Set<T> set2) {
+        Set<T> result = new HashSet<>(set1);
+        result.addAll(set2);
+        return result;
+    }
+}
+```
+
+In this example, the `DirectoryComparator` class compares two directories and returns a list of added, removed, or modified files. To use it, create an instance with the paths to both directories:
+
+```java
+public static void main(String[] args) throws IOException {
+    Path firstDir = FileSystems.getDefault().getPath("path/to/directory1");
+    Path secondDir = FileSystems.getDefault().getPath("path/to/directory2");
+
+    DirectoryComparator comparator = new DirectoryComparator(firstDir, secondDir);
+    List<String> results = comparator.compare();
+    for (String result : results) {
+        System.out.println(result);
+    }
+}
+```
+
+Replace `path/to/directory1` and `path/to/directory2` with the paths to your directories of interest. The `compare()` method will return a list of added, removed, or modified files in those directories.

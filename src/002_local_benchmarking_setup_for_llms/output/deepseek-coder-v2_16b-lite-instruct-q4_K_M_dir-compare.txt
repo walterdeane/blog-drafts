@@ -1,0 +1,83 @@
+⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠇ ⠋ ⠙ ⠹ ⠸ ⠼ ⠼ ⠦ ⠦ ⠇ ⠏  To create a Java class that recursively compares two directories and identifies added, removed, or modified files, you can use the `java.nio.file` package for file operations. Below is an example of how you might implement this functionality in a Java class named `DirectoryComparator`. This class includes methods to compare two directory paths and report differences in their contents.
+
+```java
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DirectoryComparator {
+
+    public static void main(String[] args) {
+        Path dir1 = Paths.get("path/to/directory1");
+        Path dir2 = Paths.get("path/to/directory2");
+
+        try {
+            List<Path> addedFiles = compareDirectories(dir1, dir2);
+            System.out.println("Added files: " + addedFiles);
+
+            List<Path> removedFiles = compareDirectories(dir2, dir1);
+            System.out.println("Removed files: " + removedFiles);
+
+            List<Path> modifiedFiles = findModifiedFiles(dir1, dir2);
+            System.out.println("Modified files: " + modifiedFiles);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Path> compareDirectories(Path baseDir, Path targetDir) throws IOException {
+        List<Path> differences = new ArrayList<>();
+        DirectoryStream<Path> stream = Files.newDirectoryStream(baseDir);
+        for (Path entry : stream) {
+            Path relativePath = baseDir.relativize(entry);
+            Path targetEntry = targetDir.resolve(relativePath);
+            if (Files.isDirectory(entry)) {
+                differences.addAll(compareDirectories(entry, targetEntry));
+            } else if (!Files.exists(targetEntry)) {
+                differences.add(entry);
+            }
+        }
+        return differences;
+    }
+
+    public static List<Path> findModifiedFiles(Path dir1, Path dir2) throws IOException {
+        List<Path> modifiedFiles = new ArrayList<>();
+        DirectoryStream<Path> stream1 = Files.newDirectoryStream(dir1);
+        for (Path entry : stream1) {
+            Path relativePath = dir1.relativize(entry);
+            Path targetEntry = dir2.resolve(relativePath);
+            if (Files.isRegularFile(entry)) {
+                if (!Files.exists(targetEntry) || !areEqual(entry, targetEntry)) {
+                    modifiedFiles.add(entry);
+                }
+            } else if (Files.isDirectory(entry)) {
+                List<Path> subDirModifiedFiles = findModifiedFiles(entry, dir2.resolve(relativePath));
+                modifiedFiles.addAll(subDirModifiedFiles);
+            }
+        }
+        return modifiedFiles;
+    }
+
+    private static boolean areEqual(Path file1, Path file2) throws IOException {
+        if (Files.size(file1) != Files.size(file2)) {
+            return false;
+        }
+        byte[] file1Bytes = Files.readAllBytes(file1);
+        byte[] file2Bytes = Files.readAllBytes(file2);
+        return java.util.Arrays.equals(file1Bytes, file2Bytes);
+    }
+}
+```
+
+### Explanation:
+1. **Main Method**: The `main` method is a simple entry point to demonstrate the functionality. It sets up two directory paths and calls methods to compare them for added, removed, and modified files.
+
+2. **compareDirectories(Path baseDir, Path targetDir)**: This method compares all entries in `baseDir` with those in `targetDir`. If an entry is a directory, it recursively compares the directories. If an entry does not exist in `targetDir`, it is added to the list of differences.
+
+3. **findModifiedFiles(Path dir1, Path dir2)**: This method finds files that are either modified or do not exist in one directory but exist in the other. It uses the `areEqual` method to check if two files have the same content. If an entry is a directory, it recursively checks for modifications within subdirectories.
+
+4. **areEqual(Path file1, Path file2)**: This helper method compares the contents of two files by reading their bytes and comparing them byte-by-byte. It ensures that both files are exactly the same in size and content.
+
+### Usage:
+Replace `"path/to/directory1"` and `"path/to/directory2"` with actual directory paths on your system where you want to compare files. This script will print out lists of added, removed, and modified files based on the comparison results.
