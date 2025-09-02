@@ -3,14 +3,15 @@
 ### Intro
 In my [last post](https://medium.com/@walterdeane/setting-up-a-local-llm-for-code-assistance), I walked through setting up a local LLM for code assistance. Once I had it running, the next obvious question was:  
 
-👉 **How practical is it, really, on my hardware?**  
+**How practical is it, really, on my hardware?**  
 
-It’s one thing to run a model. It’s another to know if it responds quickly enough for coding, writing, or other tasks. To answer that, I wrote a small Bash script that benchmarks Ollama models.  
+It’s one thing to run a model. It’s another to know if it responds quickly enough for coding, writing, or other tasks. If it is too slow im not really going to use it for day to day programming. The setup is still helpful for when im learning to use ai itself like setting up a local vector database and using RAG or prototyping an MCP, but it wouldn't be something I would suffer through. I hat staring at builds so i'm not going to want to suffer through that everytime I want a an autocomplete. To find out if this would work for me and what LLM works best, I wrote a small Bash script that benchmarks Ollama models. 
 
 I’ve put both the script and my benchmark data in a GitHub repo so you can run the tests yourself:  
 📂 [GitHub repo](https://github.com/walterdeane/blog-drafts/tree/main/blogs/002_local_benchmarking_setup_for_llms)
 
 ---
+The data isn't completed I'm still playing with models but I hoped it could be useful to someone else. The sample output and csv are more for demostration sake. You can download the script tweak it to whatever LLMs you want and give it a go.
 
 ### Why Benchmark?
 - Different models (Mistral, Codestral, Llama 2, DeepSeek, Qwen) perform very differently.  
@@ -267,12 +268,12 @@ echo "📊 Benchmark complete. Results logged in $RESULTS_FILE"
 
 
 ### Script Features
-This isn’t just a barebones timer — the script has a few features that make it more practical for real benchmarking:
+This isn’t just a barebones timer — the script has a few features that make it hopefully more useful for real benchmarking:
 
 - **Built-in model list (customizable):** You can run it against common local models out-of-the-box, or pass your own model names on the command line.  
-- **Auto-downloads models if missing:** If Ollama doesn’t find a model locally, it will pull it for you the first time you run it. That way, you don’t need to pre-install every model you want to test.  
+- **Auto-downloads models if missing:** If Ollama doesn’t find a model locally, it will pull it for you the first time you run it. That way, you don’t need to pre-install every model you want to test. It also warms up the model with a simple call before benchmarking so the output is closer to how it will work when you are using it. 
 - **CSV logging:** Each run writes a row into `benchmark-results.csv`, including model name, duration, status, and the path to the raw output. Perfect for comparing runs later or importing into a spreadsheet.  
-- **Saved outputs:** Each model’s raw response is written to a text file. This lets you evaluate not just *how fast* a model runs, but also *what kind of output* it produces.  
+- **Saved outputs:** Each model’s raw response is written to a text file. This lets you evaluate not just *how fast* a model runs, but also *what kind of output* it produces.  I might add a code quality checker in in a later version.
 - **Flexible prompts:** The script uses a default coding-related prompt, but you can easily swap it out with something closer to your real workload (translation, summarization, Q&A, etc.).  
 
 Together, these features let you evaluate not only raw speed but also whether a model feels “good enough” for your actual use case on your hardware.
@@ -288,7 +289,7 @@ chmod +x benchmark-llms.sh
 ./benchmark-llms.sh mistral:7b-instruct codellama:13b qwen2.5-coder:7b-instruct-q5_K_M
 ```
 
-This will log results to the terminal and append them to `benchmark-results.csv`.
+This will log results to the terminal and append them to `benchmark-results.csv`. There are several options in the script. You could just call it without a list and it will prompt you instead. LLMs get updated and superceded very quickly so you will probably want to edit the list in the script anyway.
 
 ---
 
