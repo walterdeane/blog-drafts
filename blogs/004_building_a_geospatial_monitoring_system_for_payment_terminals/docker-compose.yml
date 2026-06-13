@@ -1,0 +1,36 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: geospatial-postgis
+    environment:
+      POSTGRES_DB: geospatial
+      POSTGRES_USER: geospatial
+      POSTGRES_PASSWORD: geospatial
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis-data:/var/lib/postgresql/data
+      - ./postgis/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geospatial"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  geoserver:
+    image: kartoza/geoserver:2.24.2
+    container_name: geospatial-geoserver
+    environment:
+      GEOSERVER_ADMIN_USER: admin
+      GEOSERVER_ADMIN_PASSWORD: geoserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgis:
+        condition: service_healthy
+    volumes:
+      - geoserver-data:/opt/geoserver_data
+
+volumes:
+  postgis-data:
+  geoserver-data:
