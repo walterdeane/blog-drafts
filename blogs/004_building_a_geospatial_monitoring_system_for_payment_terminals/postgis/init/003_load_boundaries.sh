@@ -1,6 +1,6 @@
 #!/bin/bash
-# Load the Australian SAL and world country boundary shapefiles into PostGIS
-# tables for GeoServer to publish, reprojecting everything to EPSG:4326.
+# Load the Australian SAL, world country, and populated-places shapefiles into
+# PostGIS tables for GeoServer to publish, reprojecting everything to EPSG:4326.
 set -euo pipefail
 
 PSQL=(psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB")
@@ -14,3 +14,8 @@ shp2pgsql -s 7844:4326 -I -D \
 shp2pgsql -s 4326 -I -D \
     /seed-data/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp \
     public.country_boundaries | "${PSQL[@]}"
+
+# World populated places (Natural Earth, already WGS84) -> tag as EPSG:4326
+shp2pgsql -s 4326 -I -D \
+    /seed-data/ne_10m_populated_places/ne_10m_populated_places.shp \
+    public.populated_places | "${PSQL[@]}"

@@ -1,0 +1,41 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-53cf98dd:19ec4a28b17:-7ffc</id>
+  <name>populated_places</name>
+  <nativeName>populated_places</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-17f3397:19ec4572e5d:-7ffb</id>
+  </namespace>
+  <title>populated_places</title>
+  <keywords>
+    <string>features</string>
+    <string>populated_places</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-179.58998107910156</minx>
+    <maxx>179.38331604003906</maxx>
+    <miny>-90.0</miny>
+    <maxy>82.48332977294922</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-179.58998107910156</minx>
+    <maxx>179.38331604003906</maxx>
+    <miny>-90.0</miny>
+    <maxy>82.48332977294922</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-17f3397:19ec4572e5d:-7ffa</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

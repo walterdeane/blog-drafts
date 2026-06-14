@@ -38,9 +38,10 @@ start against an empty database volume:
 - `002_load_cell_towers.sql` - loads OpenCellID cell tower data for MCC 505
   (Australia) from `src-data/cell-towers/505.csv` into `cell_tower_cache`, so the
   processing service has cache hits to demonstrate out of the box
-- `003_load_boundaries.sh` - loads the SAL (suburbs/localities) and world country
-  boundary shapefiles from `src-data/` into `sal_boundaries` and `country_boundaries`,
-  reprojecting both to EPSG:4326 for GeoServer to publish as base map layers
+- `003_load_boundaries.sh` - loads the SAL (suburbs/localities), world country, and
+  populated places shapefiles from `src-data/` into `sal_boundaries`,
+  `country_boundaries`, and `populated_places`, reprojecting all to EPSG:4326 for
+  GeoServer to publish as base map layers
 
 To use the Google Geolocation API fallback, export `GOOGLE_GEOLOCATION_API_KEY` before
 running `docker compose up`.
@@ -60,6 +61,6 @@ WFS layers, styles, and base maps used by this PoC.
 - `docker-compose.yml` - PostGIS + GeoServer + processing-service
 - `postgis/` - PostGIS image build and `init/` scripts (schema + seed data)
 - `geoserver/data/` - GeoServer data directory (workspaces, stores, styles, layer groups)
-- `src-data/` - source datasets (cell towers, SAL and country boundaries) used to seed
-  PostGIS
+- `src-data/` - source datasets (cell towers, SAL boundaries, country boundaries, and
+  populated places) used to seed PostGIS
 - `processing-service/` - telemetry processing service stub
