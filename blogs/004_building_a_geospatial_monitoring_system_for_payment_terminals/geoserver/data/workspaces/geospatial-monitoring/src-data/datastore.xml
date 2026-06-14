@@ -1,0 +1,26 @@
+<dataStore>
+  <id>DataStoreInfoImpl--5ff5435b:19ec47e2e04:-7ffb</id>
+  <name>src-data</name>
+  <type>Directory of spatial files (shapefiles)</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-17f3397:19ec4572e5d:-7ffc</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">GMT</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="namespace">http://geospatial-monitoring.demo</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="skipScan">true</entry>
+    <entry key="url">file:///opt/geoserver/src_dir/SAL_2021_AUST_GDA2020_SHP</entry>
+    <entry key="fstype">shape</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2026-06-14 04:59:52.187 UTC</dateCreated>
+  <dateModified>2026-06-14 05:01:05.762 UTC</dateModified>
+  <disableOnConnFailure>false</disableOnConnFailure>
+</dataStore>

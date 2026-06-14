@@ -1,0 +1,38 @@
+# Minimal overrides for Grafana exposure and dashboard discovery.
+grafana:
+  adminUser: admin
+  adminPassword: admin
+
+  service:
+    type: NodePort
+    nodePort: 30080
+
+  # Enable sidecar to pick up ConfigMaps with dashboards
+  sidecar:
+    dashboards:
+      enabled: true
+      # ConfigMaps must have this label: grafana_dashboard: "1"
+      label: grafana_dashboard
+      # Search the namespace where Grafana runs
+      searchNamespace: "observability"
+
+  # Ensure a provider watches the sidecar folder
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: "default"
+          orgId: 1
+          folder: ""
+          type: file
+          disableDeletion: false
+          editable: true
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards
+
+prometheus:
+  # Keep default selectors; the chart's Prometheus will watch ServiceMonitors
+  # with label "release: kps" by default.
+  prometheusSpec:
+    retention: 24h

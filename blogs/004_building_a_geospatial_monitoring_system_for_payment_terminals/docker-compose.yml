@@ -31,6 +31,7 @@ services:
         condition: service_healthy
     volumes:
       - ./geoserver/data:/opt/geoserver/data_dir
+      - ./src-data:/opt/geoserver/src_dir
 
   processing-service:
     build: ./processing-service

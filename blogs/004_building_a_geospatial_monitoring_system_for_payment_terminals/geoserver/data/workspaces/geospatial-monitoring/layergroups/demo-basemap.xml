@@ -2,6 +2,7 @@
   <id>LayerGroupInfoImpl-53cf98dd:19ec4a28b17:-7ff8</id>
   <name>demo-basemap</name>
   <mode>SINGLE</mode>
+  <title>Base Map</title>
   <enabled>true</enabled>
   <advertised>true</advertised>
   <workspace>
@@ -39,5 +40,5 @@
     <crs>EPSG:4326</crs>
   </bounds>
   <dateCreated>2026-06-14 05:43:45.298 UTC</dateCreated>
-  <dateModified>2026-06-14 06:27:08.170 UTC</dateModified>
+  <dateModified>2026-06-14 06:40:07.88 UTC</dateModified>
 </layerGroup>

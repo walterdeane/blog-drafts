@@ -1,0 +1,70 @@
+services:
+  bootstrap:
+    image: alpine:3.20
+    container_name: k3d-bootstrap
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.kube:/root/.kube
+    environment:
+      - CLUSTER_NAME=grafana-lab
+    command: >
+      sh -c "
+        set -e &&
+        echo 'Installing k3d...' &&
+        apk add --no-cache curl bash jq &&
+        curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash &&
+        echo 'Creating cluster...' &&
+        k3d cluster list | grep -q ^${CLUSTER_NAME} || k3d cluster create ${CLUSTER_NAME} --agents 1 --port 3000:30080@loadbalancer &&
+        echo 'Setup complete. Waiting...' &&
+        tail -f /dev/null
+      "
+    restart: unless-stopped
+
+  build_and_import_app:
+    image: alpine:3.20
+    container_name: app-builder
+    depends_on:
+      - bootstrap
+    working_dir: /work
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./app:/work/app
+    command: >
+      sh -c "
+        set -e &&
+        echo 'Installing k3d (for image import)...' &&
+        apk add --no-cache curl bash &&
+        curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash &&
+        echo 'Building demo app image locally...' &&
+        docker build -t demo-app:latest ./app &&
+        echo 'Importing image into k3d cluster...' &&
+        k3d image import demo-app:latest -c grafana-lab &&
+        echo 'Build and import complete!'
+      "
+
+  install_stack:
+    image: alpine:3.20
+    container_name: install-stack
+    depends_on:
+      - build_and_import_app
+    volumes:
+      - ~/.kube:/root/.kube
+      - ./scripts:/work/scripts
+      - ./k8s:/work/k8s
+      - ./helm-values:/work/helm-values
+    working_dir: /work
+    command: >
+      sh -c "
+        set -e &&
+        echo 'Installing tools...' &&
+        apk add --no-cache curl bash git openssl kubectl &&
+        echo 'Installing Helm...' &&
+        curl -LO https://get.helm.sh/helm-v3.15.2-linux-amd64.tar.gz &&
+        tar -xzf helm-v3.15.2-linux-amd64.tar.gz &&
+        mv linux-amd64/helm /usr/local/bin/helm &&
+        echo 'Installing monitoring stack...' &&
+        ./scripts/install_stack.sh &&
+        echo 'Installation complete!'
+      "
+    restart: "no"
