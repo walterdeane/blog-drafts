@@ -49,6 +49,14 @@ start against an empty database volume:
 To use the Google Geolocation API fallback, export `GOOGLE_GEOLOCATION_API_KEY` before
 running `docker compose up`.
 
+### SAL (suburbs/localities) shapefile
+
+The SAL shapefile (`src-data/SAL_2021_AUST_GDA2020_SHP/`) is not committed to this repo -
+its `.shp` alone is ~140MB, over GitHub's file size limit. Download the "Suburbs and
+Localities (SAL) 2021, GDA2020" digital boundary file from the ABS Australian
+Statistical Geography Standard (ASGS) Edition 3 page on abs.gov.au, unzip it into
+`src-data/SAL_2021_AUST_GDA2020_SHP/`, then run `docker compose up`.
+
 ### GeoServer data directory
 
 GeoServer's data directory is bind-mounted from `geoserver/data/` in this repo to

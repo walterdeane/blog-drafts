@@ -1,0 +1,3 @@
+# SAL (suburbs/localities) shapefile from the ABS - the .shp alone is ~140MB,
+# over GitHub's file size limit. Download separately, see README.
+src-data/SAL_2021_AUST_GDA2020_SHP/
