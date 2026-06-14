@@ -1,0 +1,43 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl-53cf98dd:19ec4a28b17:-7ff8</id>
+  <name>demo-basemap</name>
+  <mode>SINGLE</mode>
+  <enabled>true</enabled>
+  <advertised>true</advertised>
+  <workspace>
+    <id>WorkspaceInfoImpl-17f3397:19ec4572e5d:-7ffc</id>
+  </workspace>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <publishables>
+    <published type="layer">
+      <id>LayerInfoImpl-17f3397:19ec4572e5d:-7ff8</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl-17f3397:19ec4572e5d:-7ff6</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl-53cf98dd:19ec4a28b17:-7ffb</id>
+    </published>
+  </publishables>
+  <styles>
+    <style>
+      <id>StyleInfoImpl-53cf98dd:19ec4a28b17:-7ff7</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl-53cf98dd:19ec4a28b17:-7ff6</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl-53cf98dd:19ec4a28b17:-7ff5</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>83.63410186767578</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <dateCreated>2026-06-14 05:43:45.298 UTC</dateCreated>
+  <dateModified>2026-06-14 06:27:08.170 UTC</dateModified>
+</layerGroup>

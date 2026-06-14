@@ -10,9 +10,25 @@
   <gridSubsets>
     <gridSubset>
       <gridSetName>EPSG:4326</gridSetName>
+      <extent>
+        <coords>
+          <double>96.81694793701172</double>
+          <double>-43.74049758911133</double>
+          <double>167.998046875</double>
+          <double>-9.142162322998047</double>
+        </coords>
+      </extent>
     </gridSubset>
     <gridSubset>
       <gridSetName>EPSG:900913</gridSetName>
+      <extent>
+        <coords>
+          <double>1.0777613344507024E7</double>
+          <double>-5425371.01802611</double>
+          <double>1.8701457032389503E7</double>
+          <double>-1022046.9318322073</double>
+        </coords>
+      </extent>
     </gridSubset>
   </gridSubsets>
   <metaWidthHeight>
@@ -26,7 +42,7 @@
       <key>STYLES</key>
       <defaultValue></defaultValue>
       <availableStyles class="sorted-set"/>
-      <defaultStyle>polygon</defaultStyle>
+      <defaultStyle>geospatial-monitoring:sal-states-earthy</defaultStyle>
     </styleParameterFilter>
   </parameterFilters>
   <gutter>0</gutter>

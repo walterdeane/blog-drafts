@@ -19,3 +19,13 @@ shp2pgsql -s 4326 -I -D \
 shp2pgsql -s 4326 -I -D \
     /seed-data/ne_10m_populated_places/ne_10m_populated_places.shp \
     public.populated_places | "${PSQL[@]}"
+
+# Flag Australian state/territory capitals so the populated_places style can
+# show them at a wider zoom than other towns of similar population.
+"${PSQL[@]}" <<'SQL'
+ALTER TABLE populated_places ADD COLUMN is_capital boolean NOT NULL DEFAULT false;
+
+UPDATE populated_places SET is_capital = true
+WHERE adm0name = 'Australia'
+  AND name IN ('Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Hobart', 'Darwin', 'Canberra');
+SQL

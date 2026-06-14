@@ -10,9 +10,25 @@
   <gridSubsets>
     <gridSubset>
       <gridSetName>EPSG:4326</gridSetName>
+      <extent>
+        <coords>
+          <double>-179.58998107910156</double>
+          <double>-90.0</double>
+          <double>179.38331604003906</double>
+          <double>82.48332977294922</double>
+        </coords>
+      </extent>
     </gridSubset>
     <gridSubset>
       <gridSetName>EPSG:900913</gridSetName>
+      <extent>
+        <coords>
+          <double>-1.999186524529922E7</double>
+          <double>-2.003750834E7</double>
+          <double>1.996885939838601E7</double>
+          <double>1.7366488398073055E7</double>
+        </coords>
+      </extent>
     </gridSubset>
   </gridSubsets>
   <metaWidthHeight>
@@ -26,7 +42,7 @@
       <key>STYLES</key>
       <defaultValue></defaultValue>
       <availableStyles class="sorted-set"/>
-      <defaultStyle>point</defaultStyle>
+      <defaultStyle>geospatial-monitoring:populated-places-scaled</defaultStyle>
     </styleParameterFilter>
   </parameterFilters>
   <gutter>0</gutter>
