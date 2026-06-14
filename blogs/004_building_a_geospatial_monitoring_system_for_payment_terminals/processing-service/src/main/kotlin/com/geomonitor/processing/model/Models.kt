@@ -10,6 +10,11 @@ data class CellTower(
     @JsonProperty("cell_id") val cellId: Int,
 )
 
+data class WifiAccessPoint(
+    @JsonProperty("mac_address") val macAddress: String,
+    @JsonProperty("signal_strength") val signalStrengthDbm: Int? = null,
+)
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Location(
     val latitude: Double,
@@ -19,5 +24,6 @@ data class Location(
 
 data class DeviceTelemetry(
     @JsonProperty("device_id") val deviceId: String,
-    @JsonProperty("cell_towers") val cellTowers: List<CellTower>,
+    @JsonProperty("cell_towers") val cellTowers: List<CellTower> = emptyList(),
+    @JsonProperty("wifi_access_points") val wifiAccessPoints: List<WifiAccessPoint> = emptyList(),
 )

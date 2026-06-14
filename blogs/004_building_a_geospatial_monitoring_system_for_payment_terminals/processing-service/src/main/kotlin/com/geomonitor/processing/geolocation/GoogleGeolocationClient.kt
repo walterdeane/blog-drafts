@@ -1,7 +1,9 @@
 package com.geomonitor.processing.geolocation
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.geomonitor.processing.model.CellTower
 import com.geomonitor.processing.model.Location
+import com.geomonitor.processing.model.WifiAccessPoint
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.MediaType
@@ -27,7 +29,7 @@ class GoogleGeolocationClient(
 
     private val restClient = restClientBuilder.baseUrl(GOOGLE_GEOLOCATION_URL).build()
 
-    override fun resolve(cellTowers: List<CellTower>): Location {
+    override fun resolve(cellTowers: List<CellTower>, wifiAccessPoints: List<WifiAccessPoint>): Location {
         val payload = GeolocationRequest(
             considerIp = false,
             cellTowers = cellTowers.map {
@@ -36,6 +38,12 @@ class GoogleGeolocationClient(
                     mobileNetworkCode = it.mnc,
                     locationAreaCode = it.lac,
                     cellId = it.cellId,
+                )
+            },
+            wifiAccessPoints = wifiAccessPoints.map {
+                GeolocationRequest.WifiAccessPointSignal(
+                    macAddress = it.macAddress,
+                    signalStrength = it.signalStrengthDbm,
                 )
             },
         )
@@ -59,12 +67,19 @@ class GoogleGeolocationClient(
 data class GeolocationRequest(
     val considerIp: Boolean,
     val cellTowers: List<CellTowerSignal>,
+    val wifiAccessPoints: List<WifiAccessPointSignal>,
 ) {
     data class CellTowerSignal(
         val mobileCountryCode: Int,
         val mobileNetworkCode: Int,
         val locationAreaCode: Int,
         val cellId: Int,
+    )
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    data class WifiAccessPointSignal(
+        val macAddress: String,
+        val signalStrength: Int? = null,
     )
 }
 

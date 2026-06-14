@@ -2,6 +2,7 @@ package com.geomonitor.processing.cache
 
 import com.geomonitor.processing.model.CellTower
 import com.geomonitor.processing.model.Location
+import com.geomonitor.processing.model.WifiAccessPoint
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import kotlin.math.roundToInt
@@ -32,6 +33,17 @@ class LocationCache(private val jdbcTemplate: JdbcTemplate) {
             """.trimIndent(),
             { rs, _ -> Location(latitude = rs.getDouble(1), longitude = rs.getDouble(2)) },
             tower.mcc, tower.mnc, tower.lac, tower.cellId,
+        ).firstOrNull()
+
+    fun getWifiAccessPointLocation(accessPoint: WifiAccessPoint): Location? =
+        jdbcTemplate.query(
+            """
+            SELECT ST_Y(location::geometry), ST_X(location::geometry)
+            FROM wifi_location_cache
+            WHERE bssid = ?
+            """.trimIndent(),
+            { rs, _ -> Location(latitude = rs.getDouble(1), longitude = rs.getDouble(2)) },
+            accessPoint.macAddress.lowercase(),
         ).firstOrNull()
 
     fun storeDeviceLocation(deviceId: String, location: Location, source: String) {
@@ -65,6 +77,26 @@ class LocationCache(private val jdbcTemplate: JdbcTemplate) {
             """.trimIndent(),
             location.longitude, location.latitude, location.accuracyMeters?.roundToInt(),
             tower.mcc, tower.mnc, tower.lac, tower.cellId,
+        )
+    }
+
+    fun storeWifiAccessPointLocation(accessPoint: WifiAccessPoint, location: Location) {
+        jdbcTemplate.update(
+            """
+            WITH pt AS (
+                SELECT ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography AS geog, ?::integer AS range_m
+            )
+            INSERT INTO wifi_location_cache (bssid, location, range_m, coverage, resolved_at)
+            SELECT ?, pt.geog, pt.range_m, ST_Buffer(pt.geog, pt.range_m), now()
+            FROM pt
+            ON CONFLICT (bssid) DO UPDATE
+                SET location = EXCLUDED.location,
+                    range_m = EXCLUDED.range_m,
+                    coverage = EXCLUDED.coverage,
+                    resolved_at = now()
+            """.trimIndent(),
+            location.longitude, location.latitude, location.accuracyMeters?.roundToInt(),
+            accessPoint.macAddress.lowercase(),
         )
     }
 }

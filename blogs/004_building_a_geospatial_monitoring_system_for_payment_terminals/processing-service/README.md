@@ -7,7 +7,14 @@ each device's location using the caching strategy described in the post:
 
 1. Check whether the device already has a known location.
 2. Check the cell tower cache for the device's current tower(s).
-3. Fall back to a geolocation provider only if neither is cached, then cache the result.
+3. Check the WiFi access point cache for any of the device's visible BSSIDs.
+4. Fall back to a geolocation provider only if none of the above are cached, then cache
+   the result against every reported cell tower and access point.
+
+Cell towers are matched on `(mcc, mnc, lac, cell_id)` and WiFi access points on `bssid`
+(the AP's MAC address, case-insensitive) - both are exact-match lookups against their
+own cache table (`cell_tower_cache` / `wifi_location_cache`), mirroring how each signal
+type uniquely identifies a fixed physical transmitter.
 
 This is intentionally minimal - it does not yet cover fraud signals, incident detection,
 or business intelligence feeds described in the full architecture. Those are left as future
@@ -162,6 +169,20 @@ curl -X POST http://localhost:8081/telemetry \
   "location": {"latitude": 51.5074, "longitude": -0.1278, "accuracyMeters": 3932.0},
   "source": "stub"
 }
+```
+
+`wifi_access_points` is accepted alongside or instead of `cell_towers`, each identified
+by its `mac_address` (BSSID):
+
+```bash
+curl -X POST http://localhost:8081/telemetry \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "device_id": "terminal-123",
+    "wifi_access_points": [
+      {"mac_address": "AA:BB:CC:DD:EE:FF", "signal_strength": -55}
+    ]
+  }'
 ```
 
 ## Building and unit tests
