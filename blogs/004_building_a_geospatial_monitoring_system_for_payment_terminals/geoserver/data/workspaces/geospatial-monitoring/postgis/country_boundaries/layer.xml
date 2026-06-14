@@ -1,0 +1,16 @@
+<layer>
+  <name>country_boundaries</name>
+  <id>LayerInfoImpl-17f3397:19ec4572e5d:-7ff8</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--71af9a7c:19ec43fd995:-7ffe</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-17f3397:19ec4572e5d:-7ff9</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2026-06-14 04:50:15.187 UTC</dateCreated>
+</layer>

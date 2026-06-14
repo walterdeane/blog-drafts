@@ -1,0 +1,16 @@
+<layer>
+  <name>sal_boundaries</name>
+  <id>LayerInfoImpl-17f3397:19ec4572e5d:-7ff6</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--71af9a7c:19ec43fd995:-7ffe</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-17f3397:19ec4572e5d:-7ff7</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2026-06-14 04:50:52.348 UTC</dateCreated>
+</layer>
