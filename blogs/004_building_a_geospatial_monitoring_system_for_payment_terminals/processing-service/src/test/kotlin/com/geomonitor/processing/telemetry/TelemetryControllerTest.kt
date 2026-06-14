@@ -39,9 +39,12 @@ class TelemetryControllerTest {
         assertEquals(gps, response.location)
         assertEquals("gps", response.source)
 
-        // The reported GPS fix is used to refine the cell tower and WiFi caches too.
-        verify(locationCache).storeCellTowerLocation(tower, gps)
+        // The reported GPS fix is used to refine the WiFi cache, but not the cell
+        // tower cache - a cell tower's coverage area is much larger than GPS
+        // accuracy, so a single device's fix isn't representative of "the cell
+        // tower's location" for other devices on the same tower.
         verify(locationCache).storeWifiAccessPointLocation(accessPoint, gps)
+        verify(locationCache, never()).storeCellTowerLocation(tower, gps)
         verify(locationCache).storeDeviceLocation("terminal-123", gps, "gps")
         verify(locationCache, never()).getDeviceLocation(anyString())
         verifyNoInteractions(geolocationClient)

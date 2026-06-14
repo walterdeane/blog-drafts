@@ -242,9 +242,16 @@ request if no cached location is found:
 If the device has its own accurate GPS or fused-location fix, include it as
 `gps_location`. When present, it's treated as the most precise available signal and
 **overrides** any cached or provider-resolved location for this request - the response
-comes straight back with `"source": "gps"`, and the reported cell tower(s) and WiFi
-access point(s) are written into their respective caches against this location, so
-future requests for the same towers/APs benefit from the more accurate fix:
+comes straight back with `"source": "gps"`, and the reported WiFi access point(s) are
+written into the WiFi cache against this location, so future requests for the same APs
+benefit from the more accurate fix.
+
+The cell tower cache is *not* updated from `gps_location`: a cell tower's coverage area
+(hundreds of meters to several kilometers) is much larger than typical GPS accuracy, so
+one device's fix is a point sample within that area, not a good estimate of "the cell
+tower's location" for other devices elsewhere in its range. WiFi AP range, by contrast,
+is on the same order as GPS accuracy, so a connected device's fix is a reasonable proxy
+for that AP's physical location.
 
 ```bash
 curl -X POST http://localhost:8081/telemetry \

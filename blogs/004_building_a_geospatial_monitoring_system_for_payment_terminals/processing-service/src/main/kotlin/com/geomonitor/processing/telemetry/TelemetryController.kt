@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController
  * caching strategy from the blog post:
  *
  * 0. If the device reports its own GPS/fused location, trust it directly - it's more
- *    precise than any cached or API-derived estimate - and use it to refine the cell
- *    tower and WiFi access point caches for the signals reported alongside it.
+ *    precise than any cached or API-derived estimate - and use it to refine the WiFi
+ *    access point cache for the APs reported alongside it. A cell tower's coverage
+ *    area is much larger than GPS accuracy, so a single device's fix isn't a good
+ *    estimate of "the cell tower's location" for other devices and is not used to
+ *    update the cell tower cache.
  * 1. Check whether the device already has a known location.
  * 2. Check the cell tower cache for the device's current tower(s).
  * 3. Check the WiFi access point cache, prioritizing the AP the device is currently
@@ -43,9 +46,6 @@ class TelemetryController(
 
     private fun resolveLocation(telemetry: DeviceTelemetry): Pair<Location, String> {
         telemetry.gpsLocation?.let { gpsLocation ->
-            for (tower in telemetry.cellTowers) {
-                locationCache.storeCellTowerLocation(tower, gpsLocation)
-            }
             for (accessPoint in telemetry.wifiAccessPoints) {
                 locationCache.storeWifiAccessPointLocation(accessPoint, gpsLocation)
             }
