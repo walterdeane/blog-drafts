@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGIS_HOST:localhost}:${POSTGIS_PORT:5432}/${POSTGIS_DB:geospatial}
+    username: ${POSTGIS_USER:geospatial}
+    password: ${POSTGIS_PASSWORD:geospatial}
+
+app:
+  geolocation:
+    provider: ${GEOLOCATION_PROVIDER:stub}
+  google:
+    geolocation-api-key: ${GOOGLE_GEOLOCATION_API_KEY:}

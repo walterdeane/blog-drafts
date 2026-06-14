@@ -1,6 +1,6 @@
 services:
   postgis:
-    image: postgis/postgis:16-3.4
+    build: ./postgis
     container_name: geospatial-postgis
     environment:
       POSTGRES_DB: geospatial
@@ -11,6 +11,7 @@ services:
     volumes:
       - postgis-data:/var/lib/postgresql/data
       - ./postgis/init:/docker-entrypoint-initdb.d
+      - ./src-data:/seed-data:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U geospatial"]
       interval: 5s
@@ -29,8 +30,22 @@ services:
       postgis:
         condition: service_healthy
     volumes:
-      - geoserver-data:/opt/geoserver_data
+      - ./geoserver/data:/opt/geoserver/data_dir
+
+  processing-service:
+    build: ./processing-service
+    container_name: geospatial-processing-service
+    environment:
+      POSTGIS_HOST: postgis
+      POSTGIS_DB: geospatial
+      POSTGIS_USER: geospatial
+      POSTGIS_PASSWORD: geospatial
+      GOOGLE_GEOLOCATION_API_KEY: ${GOOGLE_GEOLOCATION_API_KEY:-}
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgis:
+        condition: service_healthy
 
 volumes:
   postgis-data:
-  geoserver-data:

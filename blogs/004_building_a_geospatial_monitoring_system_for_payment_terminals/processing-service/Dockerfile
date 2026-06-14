@@ -1,10 +1,20 @@
-FROM python:3.12-slim
+FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY gradlew settings.gradle.kts build.gradle.kts ./
+COPY gradle/ gradle/
+RUN ./gradlew --no-daemon dependencies
 
 COPY src/ src/
+RUN ./gradlew --no-daemon bootJar
 
-CMD ["python", "-m", "src.main"]
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY --from=build /app/build/libs/*.jar app.jar
+
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
