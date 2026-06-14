@@ -21,14 +21,14 @@
   AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
   <srs>EPSG:4326</srs>
   <nativeBoundingBox>
-    <minx>96.81694793701172</minx>
+    <minx>96.81698608398438</minx>
     <maxx>167.998046875</maxx>
     <miny>-43.74049758911133</miny>
     <maxy>-9.142162322998047</maxy>
     <crs>EPSG:4326</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>96.81694793701172</minx>
+    <minx>96.81698608398438</minx>
     <maxx>167.998046875</maxx>
     <miny>-43.74049758911133</miny>
     <maxy>-9.142162322998047</maxy>
@@ -36,13 +36,12 @@
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
   <enabled>true</enabled>
+  <advertised>true</advertised>
   <store class="dataStore">
     <id>DataStoreInfoImpl-17f3397:19ec4572e5d:-7ffa</id>
   </store>
   <serviceConfiguration>false</serviceConfiguration>
   <simpleConversionEnabled>false</simpleConversionEnabled>
-  <internationalTitle/>
-  <internationalAbstract/>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>
   <padWithZeros>false</padWithZeros>
@@ -50,4 +49,5 @@
   <overridingServiceSRS>false</overridingServiceSRS>
   <skipNumberMatched>false</skipNumberMatched>
   <circularArcPresent>false</circularArcPresent>
+  <encodeMeasures>false</encodeMeasures>
 </featureType>

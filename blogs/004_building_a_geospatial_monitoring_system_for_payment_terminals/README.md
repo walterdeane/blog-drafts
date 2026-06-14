@@ -51,11 +51,13 @@ running `docker compose up`.
 
 ### SAL (suburbs/localities) shapefile
 
-The SAL shapefile (`src-data/SAL_2021_AUST_GDA2020_SHP/`) is not committed to this repo -
-its `.shp` alone is ~140MB, over GitHub's file size limit. Download the "Suburbs and
-Localities (SAL) 2021, GDA2020" digital boundary file from the ABS Australian
-Statistical Geography Standard (ASGS) Edition 3 page on abs.gov.au, unzip it into
-`src-data/SAL_2021_AUST_GDA2020_SHP/`, then run `docker compose up`.
+`src-data/SAL_2021_AUST_GDA2020_SIMPLIFIED/` contains the ABS "Suburbs and Localities
+(SAL) 2021, GDA2020" digital boundary file, simplified (`ST_SimplifyPreserveTopology`,
+tolerance 0.0001 degrees, ~11m) to shrink the `.shp` from ~140MB to ~40MB so it fits
+within GitHub's file size limits. This is plenty precise for the basemap rendering in
+this PoC; if you need the original full-resolution boundaries, download the SAL 2021
+GDA2020 shapefile from the ABS Australian Statistical Geography Standard (ASGS)
+Edition 3 page on abs.gov.au and point `003_load_boundaries.sh` at it instead.
 
 ### GeoServer data directory
 
