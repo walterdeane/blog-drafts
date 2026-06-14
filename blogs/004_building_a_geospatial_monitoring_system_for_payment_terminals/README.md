@@ -25,7 +25,10 @@ This brings up PostGIS, GeoServer, and the processing service together:
 
 - PostGIS is available on `localhost:5432` (db `geospatial`, user/password `geospatial`)
 - GeoServer admin UI is available at [http://localhost:8080/geoserver](http://localhost:8080/geoserver)
-  (user `admin`, password `geoserver`)
+  (user `admin`, password `geoserver` — these are the GeoServer defaults, left
+  unchanged and committed as part of `geoserver/data/security/` since this PoC is
+  for local/demo use only; a real deployment must change the admin credentials and
+  master password before being exposed beyond localhost)
 - The processing service is available on `localhost:8081` - see
   [processing-service/README.md](processing-service/README.md) for its API
 
