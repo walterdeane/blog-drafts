@@ -13,6 +13,7 @@ data class CellTower(
 data class WifiAccessPoint(
     @JsonProperty("mac_address") val macAddress: String,
     @JsonProperty("signal_strength") val signalStrengthDbm: Int? = null,
+    @JsonProperty("connected") val connected: Boolean = false,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

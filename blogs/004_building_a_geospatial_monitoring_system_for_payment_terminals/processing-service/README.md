@@ -7,7 +7,8 @@ each device's location using the caching strategy described in the post:
 
 1. Check whether the device already has a known location.
 2. Check the cell tower cache for the device's current tower(s).
-3. Check the WiFi access point cache for any of the device's visible BSSIDs.
+3. Check the WiFi access point cache, prioritizing the AP the device is currently
+   connected/associated with, then falling back to the other scanned BSSIDs.
 4. Fall back to a geolocation provider only if none of the above are cached, then cache
    the result against every reported cell tower and access point.
 
@@ -15,6 +16,14 @@ Cell towers are matched on `(mcc, mnc, lac, cell_id)` and WiFi access points on 
 (the AP's MAC address, case-insensitive) - both are exact-match lookups against their
 own cache table (`cell_tower_cache` / `wifi_location_cache`), mirroring how each signal
 type uniquely identifies a fixed physical transmitter.
+
+A device typically reports one cell tower but a list of ~10 WiFi access points, whose
+membership and order change scan-to-scan as APs go on/offline or get replaced. Caching
+per-BSSID (rather than per-scan-list) tolerates this naturally - matching is per access
+point, not per set, so any single previously-seen BSSID is enough for a cache hit.
+Within that list, the `connected` flag marks the AP the device is actively associated
+with (Android: `WifiInfo.getBSSID()`) - the WiFi analog of "the cell tower I'm camped
+on" - and is checked first before falling back to the other scanned APs.
 
 This is intentionally minimal - it does not yet cover fraud signals, incident detection,
 or business intelligence feeds described in the full architecture. Those are left as future
@@ -172,7 +181,9 @@ curl -X POST http://localhost:8081/telemetry \
 ```
 
 `wifi_access_points` is accepted alongside or instead of `cell_towers`, each identified
-by its `mac_address` (BSSID):
+by its `mac_address` (BSSID). `connected` is optional (defaults to `false`) and marks
+the AP the device is actively associated with, as opposed to the other APs merely seen
+in its scan results:
 
 ```bash
 curl -X POST http://localhost:8081/telemetry \
@@ -180,7 +191,8 @@ curl -X POST http://localhost:8081/telemetry \
   -d '{
     "device_id": "terminal-123",
     "wifi_access_points": [
-      {"mac_address": "AA:BB:CC:DD:EE:FF", "signal_strength": -55}
+      {"mac_address": "AA:BB:CC:DD:EE:FF", "signal_strength": -55, "connected": true},
+      {"mac_address": "11:22:33:44:55:66", "signal_strength": -70}
     ]
   }'
 ```

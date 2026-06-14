@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController
  *
  * 1. Check whether the device already has a known location.
  * 2. Check the cell tower cache for the device's current tower(s).
- * 3. Check the WiFi access point cache for any of the device's visible BSSIDs.
+ * 3. Check the WiFi access point cache, prioritizing the AP the device is currently
+ *    connected/associated with, then falling back to the other scanned BSSIDs.
  * 4. Fall back to the Google Geolocation API only if none of the above are cached,
  *    then cache the result against every reported cell tower and access point.
  */
@@ -44,7 +45,8 @@ class TelemetryController(
             locationCache.getCellTowerLocation(tower)?.let { return it to "cache" }
         }
 
-        for (accessPoint in telemetry.wifiAccessPoints) {
+        val (connected, scanned) = telemetry.wifiAccessPoints.partition { it.connected }
+        for (accessPoint in connected + scanned) {
             locationCache.getWifiAccessPointLocation(accessPoint)?.let { return it to "cache" }
         }
 

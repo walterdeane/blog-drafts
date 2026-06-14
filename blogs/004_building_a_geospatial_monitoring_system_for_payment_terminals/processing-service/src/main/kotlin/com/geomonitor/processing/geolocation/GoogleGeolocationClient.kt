@@ -40,6 +40,8 @@ class GoogleGeolocationClient(
                     cellId = it.cellId,
                 )
             },
+            // `WifiAccessPoint.connected` has no equivalent in Google's API and is
+            // intentionally dropped here - it only affects cache lookup order.
             wifiAccessPoints = wifiAccessPoints.map {
                 GeolocationRequest.WifiAccessPointSignal(
                     macAddress = it.macAddress,

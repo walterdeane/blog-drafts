@@ -48,5 +48,25 @@ class ModelsTest {
             WifiAccessPoint(macAddress = "AA:BB:CC:DD:EE:FF", signalStrengthDbm = -55),
             telemetry.wifiAccessPoints[0],
         )
+        assertEquals(false, telemetry.wifiAccessPoints[0].connected)
+    }
+
+    @Test
+    fun `deserializes connected flag on wifi access points`() {
+        val json = """
+            {
+              "device_id": "terminal-123",
+              "wifi_access_points": [
+                {"mac_address": "AA:BB:CC:DD:EE:FF", "signal_strength": -55, "connected": true}
+              ]
+            }
+        """.trimIndent()
+
+        val telemetry = objectMapper.readValue(json, DeviceTelemetry::class.java)
+
+        assertEquals(
+            WifiAccessPoint(macAddress = "AA:BB:CC:DD:EE:FF", signalStrengthDbm = -55, connected = true),
+            telemetry.wifiAccessPoints[0],
+        )
     }
 }
