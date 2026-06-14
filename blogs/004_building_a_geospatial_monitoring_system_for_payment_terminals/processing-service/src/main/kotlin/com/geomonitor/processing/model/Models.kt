@@ -27,4 +27,5 @@ data class DeviceTelemetry(
     @JsonProperty("device_id") val deviceId: String,
     @JsonProperty("cell_towers") val cellTowers: List<CellTower> = emptyList(),
     @JsonProperty("wifi_access_points") val wifiAccessPoints: List<WifiAccessPoint> = emptyList(),
+    @JsonProperty("gps_location") val gpsLocation: Location? = null,
 )

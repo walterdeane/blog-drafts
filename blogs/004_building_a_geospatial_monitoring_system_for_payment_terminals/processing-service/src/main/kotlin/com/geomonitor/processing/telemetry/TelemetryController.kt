@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController
  * Accepts device telemetry as JSON and resolves each device's location using the
  * caching strategy from the blog post:
  *
+ * 0. If the device reports its own GPS/fused location, trust it directly - it's more
+ *    precise than any cached or API-derived estimate - and use it to refine the cell
+ *    tower and WiFi access point caches for the signals reported alongside it.
  * 1. Check whether the device already has a known location.
  * 2. Check the cell tower cache for the device's current tower(s).
  * 3. Check the WiFi access point cache, prioritizing the AP the device is currently
@@ -39,6 +42,16 @@ class TelemetryController(
     }
 
     private fun resolveLocation(telemetry: DeviceTelemetry): Pair<Location, String> {
+        telemetry.gpsLocation?.let { gpsLocation ->
+            for (tower in telemetry.cellTowers) {
+                locationCache.storeCellTowerLocation(tower, gpsLocation)
+            }
+            for (accessPoint in telemetry.wifiAccessPoints) {
+                locationCache.storeWifiAccessPointLocation(accessPoint, gpsLocation)
+            }
+            return gpsLocation to "gps"
+        }
+
         locationCache.getDeviceLocation(telemetry.deviceId)?.let { return it to "cache" }
 
         for (tower in telemetry.cellTowers) {

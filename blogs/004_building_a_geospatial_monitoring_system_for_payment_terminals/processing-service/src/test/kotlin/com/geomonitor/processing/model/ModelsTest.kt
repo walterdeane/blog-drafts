@@ -69,4 +69,89 @@ class ModelsTest {
             telemetry.wifiAccessPoints[0],
         )
     }
+
+    /**
+     * Mirrors the combined cell tower + WiFi access point request shape sent to the
+     * Google Geolocation API:
+     *
+     * ```json
+     * {
+     *   "considerIp": false,
+     *   "cellTowers": [
+     *     {"cellId": 1234567, "locationAreaCode": 5678, "mobileCountryCode": 310, "mobileNetworkCode": 410}
+     *   ],
+     *   "wifiAccessPoints": [
+     *     {"macAddress": "00:25:9c:cf:1c:ac"}
+     *   ]
+     * }
+     * ```
+     *
+     * The device telemetry carries the same identifiers under its own snake_case
+     * field names (`mcc`/`mnc`/`lac`/`cell_id`, `mac_address`).
+     */
+    @Test
+    fun `deserializes combined cell tower and wifi telemetry matching the Google Geolocation API shape`() {
+        val json = """
+            {
+              "device_id": "terminal-123",
+              "cell_towers": [
+                {"mcc": 310, "mnc": 410, "lac": 5678, "cell_id": 1234567}
+              ],
+              "wifi_access_points": [
+                {"mac_address": "00:25:9c:cf:1c:ac"}
+              ]
+            }
+        """.trimIndent()
+
+        val telemetry = objectMapper.readValue(json, DeviceTelemetry::class.java)
+
+        assertEquals(
+            CellTower(mcc = 310, mnc = 410, lac = 5678, cellId = 1234567),
+            telemetry.cellTowers[0],
+        )
+        assertEquals(
+            WifiAccessPoint(macAddress = "00:25:9c:cf:1c:ac"),
+            telemetry.wifiAccessPoints[0],
+        )
+        assertEquals(null, telemetry.gpsLocation)
+    }
+
+    @Test
+    fun `deserializes telemetry with a device-reported gps location`() {
+        val json = """
+            {
+              "device_id": "terminal-123",
+              "cell_towers": [
+                {"mcc": 310, "mnc": 410, "lac": 5678, "cell_id": 1234567}
+              ],
+              "wifi_access_points": [
+                {"mac_address": "00:25:9c:cf:1c:ac"}
+              ],
+              "gps_location": {"latitude": -33.8688, "longitude": 151.2093, "accuracyMeters": 12.5}
+            }
+        """.trimIndent()
+
+        val telemetry = objectMapper.readValue(json, DeviceTelemetry::class.java)
+
+        assertEquals(
+            Location(latitude = -33.8688, longitude = 151.2093, accuracyMeters = 12.5),
+            telemetry.gpsLocation,
+        )
+    }
+
+    @Test
+    fun `gps_location is absent by default`() {
+        val json = """
+            {
+              "device_id": "terminal-123",
+              "cell_towers": [
+                {"mcc": 310, "mnc": 410, "lac": 5678, "cell_id": 1234567}
+              ]
+            }
+        """.trimIndent()
+
+        val telemetry = objectMapper.readValue(json, DeviceTelemetry::class.java)
+
+        assertEquals(null, telemetry.gpsLocation)
+    }
 }

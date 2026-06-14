@@ -5,6 +5,9 @@ A minimal stand-in for the "Telemetry Processing Service" described in the blog 
 It's a Kotlin/Spring Boot application that accepts device telemetry over HTTP and resolves
 each device's location using the caching strategy described in the post:
 
+0. If the device reports its own GPS/fused location, trust it directly - it's more
+   precise than any cached or API-derived estimate - and use it to refine the cell
+   tower and WiFi access point caches for the signals reported alongside it.
 1. Check whether the device already has a known location.
 2. Check the cell tower cache for the device's current tower(s).
 3. Check the WiFi access point cache, prioritizing the AP the device is currently
@@ -196,6 +199,79 @@ curl -X POST http://localhost:8081/telemetry \
     ]
   }'
 ```
+
+### Combined cell tower + WiFi telemetry
+
+A device typically reports both signal types in one request. The `cell_towers` and
+`wifi_access_points` fields carry exactly the identifiers needed to call the
+[Google Geolocation API](https://developers.google.com/maps/documentation/geolocation/overview)
+directly - `mcc`/`mnc`/`lac`/`cell_id` map to `mobileCountryCode`/`mobileNetworkCode`/
+`locationAreaCode`/`cellId`, and `mac_address` maps to `macAddress`:
+
+```bash
+curl -X POST http://localhost:8081/telemetry \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "device_id": "terminal-123",
+    "cell_towers": [
+      {"mcc": 310, "mnc": 410, "lac": 5678, "cell_id": 1234567}
+    ],
+    "wifi_access_points": [
+      {"mac_address": "00:25:9c:cf:1c:ac"}
+    ]
+  }'
+```
+
+which the processing service would turn into the following Google Geolocation API
+request if no cached location is found:
+
+```json
+{
+  "considerIp": false,
+  "cellTowers": [
+    {"cellId": 1234567, "locationAreaCode": 5678, "mobileCountryCode": 310, "mobileNetworkCode": 410}
+  ],
+  "wifiAccessPoints": [
+    {"macAddress": "00:25:9c:cf:1c:ac"}
+  ]
+}
+```
+
+### Device-reported GPS location
+
+If the device has its own accurate GPS or fused-location fix, include it as
+`gps_location`. When present, it's treated as the most precise available signal and
+**overrides** any cached or provider-resolved location for this request - the response
+comes straight back with `"source": "gps"`, and the reported cell tower(s) and WiFi
+access point(s) are written into their respective caches against this location, so
+future requests for the same towers/APs benefit from the more accurate fix:
+
+```bash
+curl -X POST http://localhost:8081/telemetry \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "device_id": "terminal-123",
+    "cell_towers": [
+      {"mcc": 310, "mnc": 410, "lac": 5678, "cell_id": 1234567}
+    ],
+    "wifi_access_points": [
+      {"mac_address": "00:25:9c:cf:1c:ac"}
+    ],
+    "gps_location": {"latitude": -33.8688, "longitude": 151.2093, "accuracyMeters": 12.5}
+  }'
+```
+
+```json
+{
+  "device_id": "terminal-123",
+  "location": {"latitude": -33.8688, "longitude": 151.2093, "accuracyMeters": 12.5},
+  "source": "gps"
+}
+```
+
+`gps_location` is optional and omitted when the device has no accurate fix (e.g. indoors
+with GPS unavailable) - in that case resolution proceeds through the cache/provider
+steps as usual.
 
 ## Building and unit tests
 
