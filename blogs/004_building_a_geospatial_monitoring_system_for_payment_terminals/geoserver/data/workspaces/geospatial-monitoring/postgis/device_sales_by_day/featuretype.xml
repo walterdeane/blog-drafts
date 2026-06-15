@@ -1,0 +1,61 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--1447cc19:19ec94283ca:-1162</id>
+  <name>device_sales_by_day</name>
+  <nativeName>device_sales_by_day</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-17f3397:19ec4572e5d:-7ffb</id>
+  </namespace>
+  <title>Terminal sales by day</title>
+  <keywords>
+    <string>features</string>
+    <string>device_sales_by_day</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>115.51963273381148</minx>
+    <maxx>153.56239006200698</maxx>
+    <miny>-43.02820857581431</miny>
+    <maxy>-12.462089272988498</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>115.51963273381148</minx>
+    <maxx>153.56239006200698</maxx>
+    <miny>-43.02820857581431</miny>
+    <maxy>-12.462089272988498</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="JDBC_VIRTUAL_TABLE">
+      <virtualTable>
+        <name>device_sales_by_day</name>
+        <sql>SELECT s.device_id, s.summary_date, s.transaction_count, s.sales_total_cents, d.merchant_category_name, d.location::geometry AS geom FROM device_sales_summary s JOIN device_locations d ON d.device_id = s.device_id WHERE s.summary_date = &apos;%date%&apos;
+</sql>
+        <escapeSql>false</escapeSql>
+        <geometry>
+          <name>geom</name>
+          <type>Point</type>
+          <srid>4326</srid>
+        </geometry>
+        <parameter>
+          <name>date</name>
+          <defaultValue>2026-06-14</defaultValue>
+          <regexpValidator>^[0-9]{4}-[0-9]{2}-[0-9]{2}$</regexpValidator>
+        </parameter>
+      </virtualTable>
+    </entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-17f3397:19ec4572e5d:-7ffa</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

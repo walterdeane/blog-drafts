@@ -16,11 +16,11 @@
           </ogc:Filter>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#00549F</sld:CssParameter>
+              <sld:CssParameter name="fill">#0B3D6B</sld:CssParameter>
               <sld:CssParameter name="fill-opacity">0.12</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#00549F</sld:CssParameter>
+              <sld:CssParameter name="stroke">#0B3D6B</sld:CssParameter>
               <sld:CssParameter name="stroke-opacity">0.3</sld:CssParameter>
               <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>
@@ -36,11 +36,11 @@
           </ogc:Filter>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#F26522</sld:CssParameter>
+              <sld:CssParameter name="fill">#B84A12</sld:CssParameter>
               <sld:CssParameter name="fill-opacity">0.12</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#F26522</sld:CssParameter>
+              <sld:CssParameter name="stroke">#B84A12</sld:CssParameter>
               <sld:CssParameter name="stroke-opacity">0.3</sld:CssParameter>
               <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>
@@ -51,11 +51,11 @@
           <sld:ElseFilter/>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#888888</sld:CssParameter>
+              <sld:CssParameter name="fill">#4B5563</sld:CssParameter>
               <sld:CssParameter name="fill-opacity">0.12</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#888888</sld:CssParameter>
+              <sld:CssParameter name="stroke">#4B5563</sld:CssParameter>
               <sld:CssParameter name="stroke-opacity">0.3</sld:CssParameter>
               <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>

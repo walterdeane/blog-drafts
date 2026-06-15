@@ -2,126 +2,39 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Terminals by SIM Provider &amp; Cell Towers</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='3')}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
-<body>
+<body class="demo-map-page demo-map-page--network">
 <div th:replace="~{fragments/nav :: nav}"></div>
 
-<h1>Terminals by SIM Provider &amp; Cell Towers</h1>
-<p>
-    Demo terminals colored by SIM provider, alongside Telstra/Optus/other cell towers
-    across Australia and their coverage ranges. Use the layer toggle (top right) to
-    show/hide each layer - coverage circles are off by default since there are a lot
-    of them. Click a terminal or cell tower to see its details.
-</p>
+<header class="demo-hero demo-hero--network">
+    <div class="demo-hero-inner">
+        <p class="demo-eyebrow"><a href="/">Home</a> / Demo maps / Network &amp; coverage</p>
+        <h1>Terminals by SIM Provider &amp; Cell Towers</h1>
+        <p class="demo-subtitle">
+            Terminals colored by SIM provider with Telstra, Optus, and other cell towers.
+            Coverage circles are off by default — use the layer control to turn them on.
+        </p>
+    </div>
+</header>
 
-<div id="map" class="map-container"></div>
+<main class="demo-main">
+    <div class="demo-map-frame">
+        <div class="demo-map-shell">
+            <div id="map" class="map-container"></div>
+        </div>
+    </div>
+</main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script th:src="@{/js/demo-map.js}"></script>
+<script th:src="@{/js/demo-map.js(v='3')}"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const wmsUrl = /*[[${wmsUrl}]]*/ 'http://localhost:8080/geoserver/geospatial-monitoring/wms';
+    initTerminalNetworkMap(/*[[${wmsUrl}]]*/ 'http://localhost:8080/geoserver/geospatial-monitoring/wms');
     /*]]>*/
-
-    const map = L.map('map', {center: [-25.27, 133.78], zoom: 4, minZoom: 3});
-
-    L.tileLayer.wms(wmsUrl, {
-        layers: 'geospatial-monitoring:demo-basemap',
-        format: 'image/png',
-        version: '1.1.0',
-    }).addTo(map);
-
-    const coverage = L.tileLayer.wms(wmsUrl, {
-        layers: 'geospatial-monitoring:cell_tower_carrier_coverage',
-        styles: 'cell-tower-coverage',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-    });
-
-    const towers = L.tileLayer.wms(wmsUrl, {
-        layers: 'geospatial-monitoring:cell_tower_carrier_points',
-        styles: 'cell-tower-carrier',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-    }).addTo(map);
-
-    const terminals = L.tileLayer.wms(wmsUrl, {
-        layers: 'geospatial-monitoring:device_locations',
-        styles: 'terminal-provider',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-    }).addTo(map);
-
-    L.control.layers(null, {
-        'Terminals (SIM provider)': terminals,
-        'Cell towers': towers,
-        'Cell tower coverage': coverage,
-    }, {collapsed: false}).addTo(map);
-
-    function queryTowers(latlng) {
-        if (!map.hasLayer(towers)) return;
-        fetch(getFeatureInfoUrl(map, towers, latlng))
-            .then((res) => res.json())
-            .then((data) => {
-                if (!data.features || data.features.length === 0) return;
-                L.popup()
-                    .setLatLng(latlng)
-                    .setContent(cellTowerProperties(data.features[0].properties))
-                    .openOn(map);
-            });
-    }
-
-    map.on('click', function (e) {
-        if (!map.hasLayer(terminals)) {
-            queryTowers(e.latlng);
-            return;
-        }
-        fetch(getFeatureInfoUrl(map, terminals, e.latlng))
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.features && data.features.length > 0) {
-                    const feature = data.features[0];
-                    const deviceId = feature.id.split('.')[1];
-                    L.popup()
-                        .setLatLng(e.latlng)
-                        .setContent(deviceProperties(deviceId, feature.properties))
-                        .openOn(map);
-                    return;
-                }
-                queryTowers(e.latlng);
-            });
-    });
-
-    const legend = L.control({position: 'bottomright'});
-    legend.onAdd = function () {
-        const div = L.DomUtil.create('div', 'legend');
-        div.innerHTML =
-            '<div class="legend-section">' +
-            '<strong>Terminals (SIM provider)</strong>' +
-            '<div><span class="swatch circle" style="background:#00549F"></span>Telstra</div>' +
-            '<div><span class="swatch circle" style="background:#F26522"></span>Optus</div>' +
-            '<div><span class="swatch circle" style="background:#E60000"></span>Vodafone</div>' +
-            '<div><span class="swatch circle" style="background:#6A1B9A"></span>TPG</div>' +
-            '<div><span class="swatch circle" style="background:#888888"></span>Other</div>' +
-            '</div>' +
-            '<div class="legend-section">' +
-            '<strong>Cell towers / coverage</strong>' +
-            '<div><span class="swatch circle" style="background:#00549F"></span>' +
-            '<span class="swatch translucent" style="background:#00549F"></span>Telstra</div>' +
-            '<div><span class="swatch circle" style="background:#F26522"></span>' +
-            '<span class="swatch translucent" style="background:#F26522"></span>Optus</div>' +
-            '<div><span class="swatch circle" style="background:#888888"></span>' +
-            '<span class="swatch translucent" style="background:#888888"></span>Other</div>' +
-            '</div>';
-        return div;
-    };
-    legend.addTo(map);
 </script>
 </body>
 </html>

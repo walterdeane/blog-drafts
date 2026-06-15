@@ -1,0 +1,19 @@
+<layer>
+  <name>device_sales_by_day</name>
+  <id>LayerInfoImpl--1447cc19:19ec94283ca:-1161</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--1447cc19:19ec94283ca:-115d</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--1447cc19:19ec94283ca:-1162</id>
+  </resource>
+  <queryable>true</queryable>
+  <opaque>false</opaque>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2026-06-15 03:23:57.429 UTC</dateCreated>
+  <dateModified>2026-06-15 03:25:28.304 UTC</dateModified>
+</layer>

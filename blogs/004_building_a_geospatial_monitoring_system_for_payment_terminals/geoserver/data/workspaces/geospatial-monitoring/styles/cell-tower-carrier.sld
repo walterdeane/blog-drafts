@@ -17,16 +17,16 @@
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>
-                <sld:WellKnownName>circle</sld:WellKnownName>
+                <sld:WellKnownName>triangle</sld:WellKnownName>
                 <sld:Fill>
-                  <sld:CssParameter name="fill">#00549F</sld:CssParameter>
+                  <sld:CssParameter name="fill">#0B3D6B</sld:CssParameter>
                 </sld:Fill>
                 <sld:Stroke>
-                  <sld:CssParameter name="stroke">#003B73</sld:CssParameter>
+                  <sld:CssParameter name="stroke">#062444</sld:CssParameter>
                   <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
                 </sld:Stroke>
               </sld:Mark>
-              <sld:Size>4</sld:Size>
+              <sld:Size>7</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
@@ -41,16 +41,16 @@
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>
-                <sld:WellKnownName>circle</sld:WellKnownName>
+                <sld:WellKnownName>triangle</sld:WellKnownName>
                 <sld:Fill>
-                  <sld:CssParameter name="fill">#F26522</sld:CssParameter>
+                  <sld:CssParameter name="fill">#B84A12</sld:CssParameter>
                 </sld:Fill>
                 <sld:Stroke>
-                  <sld:CssParameter name="stroke">#C44E12</sld:CssParameter>
+                  <sld:CssParameter name="stroke">#7A300A</sld:CssParameter>
                   <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
                 </sld:Stroke>
               </sld:Mark>
-              <sld:Size>4</sld:Size>
+              <sld:Size>7</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
@@ -60,16 +60,16 @@
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:Mark>
-                <sld:WellKnownName>circle</sld:WellKnownName>
+                <sld:WellKnownName>triangle</sld:WellKnownName>
                 <sld:Fill>
-                  <sld:CssParameter name="fill">#888888</sld:CssParameter>
+                  <sld:CssParameter name="fill">#4B5563</sld:CssParameter>
                 </sld:Fill>
                 <sld:Stroke>
-                  <sld:CssParameter name="stroke">#555555</sld:CssParameter>
+                  <sld:CssParameter name="stroke">#2D3340</sld:CssParameter>
                   <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
                 </sld:Stroke>
               </sld:Mark>
-              <sld:Size>4</sld:Size>
+              <sld:Size>7</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>

@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Terminals by Connectivity Status</title>
+    <title>Terminal Sales by Day</title>
     <link rel="stylesheet" th:href="@{/css/style.css(v='3')}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
-<body class="demo-map-page demo-map-page--status">
+<body class="demo-map-page demo-map-page--sales">
 <div th:replace="~{fragments/nav :: nav}"></div>
 
-<header class="demo-hero demo-hero--status">
+<header class="demo-hero demo-hero--sales">
     <div class="demo-hero-inner">
-        <p class="demo-eyebrow"><a href="/">Home</a> / Demo maps / Fleet status</p>
-        <h1>Terminals by Connectivity Status</h1>
+        <p class="demo-eyebrow"><a href="/">Home</a> / Demo maps / Sales</p>
+        <h1>Terminal Sales by Day</h1>
         <p class="demo-subtitle">
-            Demo payment terminals across Australia, colored by online, expected offline,
-            or unexpected offline. Toggle layers, explore the map, and click a terminal for details.
+            Daily sales totals per terminal, colored in bands from light to dark green.
+            Pick a day from the dropdown to update the map, and click a terminal for details.
         </p>
     </div>
 </header>
@@ -33,7 +33,10 @@
 <script th:src="@{/js/demo-map.js(v='3')}"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    initTerminalStatusMap(/*[[${wmsUrl}]]*/ 'http://localhost:8080/geoserver/geospatial-monitoring/wms');
+    initSalesByDayMap(
+        /*[[${wmsUrl}]]*/ 'http://localhost:8080/geoserver/geospatial-monitoring/wms',
+        /*[[${dates}]]*/ ['2026-06-14']
+    );
     /*]]>*/
 </script>
 </body>

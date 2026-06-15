@@ -3,16 +3,16 @@
     <sld:Name>Default Styler</sld:Name>
     <sld:UserStyle>
       <sld:Name>Default Styler</sld:Name>
-      <sld:Title>Neutral country backdrop</sld:Title>
+      <sld:Title>Light neutral basemap backdrop</sld:Title>
       <sld:FeatureTypeStyle>
         <sld:Name>name</sld:Name>
         <sld:Rule>
           <sld:PolygonSymbolizer>
             <sld:Fill>
-              <sld:CssParameter name="fill">#EDE6D6</sld:CssParameter>
+              <sld:CssParameter name="fill">#F2EFE9</sld:CssParameter>
             </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#C7BBA6</sld:CssParameter>
+              <sld:CssParameter name="stroke">#D6D2C4</sld:CssParameter>
               <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>
           </sld:PolygonSymbolizer>

@@ -3,13 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Geospatial Monitoring</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='3')}">
 </head>
 <body>
 <div th:replace="~{fragments/nav :: nav}"></div>
 
 <h1>Geospatial Monitoring System</h1>
 <p>Proof-of-concept demo: device fleet support tools and sample maps.</p>
+
+<h2 id="demo-maps">Demo Maps</h2>
+<p>Interactive Leaflet maps of the demo fleet and cell tower network, with legends and layer controls.</p>
+<div class="card-grid">
+    <a class="card card-map"
+       th:each="map : ${demoMaps}"
+       th:href="${map.url}"
+       th:classappend="' card-map-accent-' + ${map.accent}">
+        <span class="card-tag" th:text="${map.tag}"></span>
+        <strong th:text="${map.title}"></strong>
+        <p th:text="${map.description}"></p>
+        <span class="card-cta">Open map →</span>
+    </a>
+</div>
 
 <h2>Support</h2>
 <div class="card-grid">
@@ -27,13 +41,5 @@
     </a>
 </div>
 
-<h2>Demo Maps</h2>
-<p>Sample maps of the demo fleet and cell tower network, with legends and layer controls.</p>
-<div class="card-grid">
-    <a class="card" th:each="map : ${demoMaps}" th:href="${map.url}">
-        <strong th:text="${map.title}"></strong>
-        <p th:text="${map.description}"></p>
-    </a>
-</div>
 </body>
 </html>

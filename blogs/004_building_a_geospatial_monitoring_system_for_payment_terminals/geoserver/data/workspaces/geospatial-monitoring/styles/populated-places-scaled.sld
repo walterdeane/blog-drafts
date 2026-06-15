@@ -26,10 +26,10 @@
               <sld:Mark>
                 <sld:WellKnownName>circle</sld:WellKnownName>
                 <sld:Fill>
-                  <sld:CssParameter name="fill">#8C4A2F</sld:CssParameter>
+                  <sld:CssParameter name="fill">#D64545</sld:CssParameter>
                 </sld:Fill>
                 <sld:Stroke>
-                  <sld:CssParameter name="stroke">#5C2E1A</sld:CssParameter>
+                  <sld:CssParameter name="stroke">#A83333</sld:CssParameter>
                 </sld:Stroke>
               </sld:Mark>
               <sld:Size>9</sld:Size>
@@ -60,11 +60,11 @@
             <sld:Halo>
               <sld:Radius>1.5</sld:Radius>
               <sld:Fill>
-                <sld:CssParameter name="fill">#F5EDE0</sld:CssParameter>
+                <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>
               </sld:Fill>
             </sld:Halo>
             <sld:Fill>
-              <sld:CssParameter name="fill">#5C2E1A</sld:CssParameter>
+              <sld:CssParameter name="fill">#334155</sld:CssParameter>
             </sld:Fill>
             <sld:VendorOption name="autoWrap">60</sld:VendorOption>
           </sld:TextSymbolizer>
@@ -93,10 +93,10 @@
               <sld:Mark>
                 <sld:WellKnownName>circle</sld:WellKnownName>
                 <sld:Fill>
-                  <sld:CssParameter name="fill">#B5764B</sld:CssParameter>
+                  <sld:CssParameter name="fill">#E37B6B</sld:CssParameter>
                 </sld:Fill>
                 <sld:Stroke>
-                  <sld:CssParameter name="stroke">#8C4A2F</sld:CssParameter>
+                  <sld:CssParameter name="stroke">#C0503D</sld:CssParameter>
                   <sld:CssParameter name="stroke-width">0.75</sld:CssParameter>
                 </sld:Stroke>
               </sld:Mark>
@@ -128,11 +128,11 @@
             <sld:Halo>
               <sld:Radius>1.2</sld:Radius>
               <sld:Fill>
-                <sld:CssParameter name="fill">#F5EDE0</sld:CssParameter>
+                <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>
               </sld:Fill>
             </sld:Halo>
             <sld:Fill>
-              <sld:CssParameter name="fill">#6B4226</sld:CssParameter>
+              <sld:CssParameter name="fill">#334155</sld:CssParameter>
             </sld:Fill>
             <sld:VendorOption name="autoWrap">60</sld:VendorOption>
           </sld:TextSymbolizer>
@@ -157,10 +157,10 @@
               <sld:Mark>
                 <sld:WellKnownName>circle</sld:WellKnownName>
                 <sld:Fill>
-                  <sld:CssParameter name="fill">#C99B6A</sld:CssParameter>
+                  <sld:CssParameter name="fill">#F0AFA3</sld:CssParameter>
                 </sld:Fill>
                 <sld:Stroke>
-                  <sld:CssParameter name="stroke">#A6754A</sld:CssParameter>
+                  <sld:CssParameter name="stroke">#D6766A</sld:CssParameter>
                   <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
                 </sld:Stroke>
               </sld:Mark>
@@ -192,11 +192,11 @@
             <sld:Halo>
               <sld:Radius>1</sld:Radius>
               <sld:Fill>
-                <sld:CssParameter name="fill">#F5EDE0</sld:CssParameter>
+                <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>
               </sld:Fill>
             </sld:Halo>
             <sld:Fill>
-              <sld:CssParameter name="fill">#7A5A3A</sld:CssParameter>
+              <sld:CssParameter name="fill">#334155</sld:CssParameter>
             </sld:Fill>
             <sld:VendorOption name="autoWrap">60</sld:VendorOption>
           </sld:TextSymbolizer>

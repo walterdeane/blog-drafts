@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.LocalDate
 
 /**
  * Lookup/update of device telemetry, connectivity history, and sales summaries -
@@ -109,6 +110,16 @@ class DeviceRepository(private val jdbcTemplate: JdbcTemplate) {
             { rs, _ -> ConnectivityEvent(status = rs.getString("status"), occurredAt = rs.getTimestamp("occurred_at").toInstant()) },
             deviceId,
         )
+
+    /**
+     * Most recent date with sales data, used to anchor the sales-by-day demo
+     * map's date selector to a date the seeded data actually covers.
+     */
+    fun getLatestSalesDate(): LocalDate? =
+        jdbcTemplate.queryForObject(
+            "SELECT MAX(summary_date) FROM device_sales_summary",
+            java.sql.Date::class.java,
+        )?.toLocalDate()
 
     fun getSalesSummary(deviceId: String): List<SalesSummaryEntry> =
         jdbcTemplate.query(
