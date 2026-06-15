@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Location Telemetry Simulator</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<h1>Location Telemetry Simulator</h1>
+<p>
+    Edit the sample telemetry message below and submit it to <code>/telemetry</code>
+    to simulate a device reporting cell tower, WiFi access point and/or GPS readings.
+    The response shows the resolved location and its source (cache, GPS or Google
+    Geolocation API).
+</p>
+
+<form id="telemetry-form">
+    <textarea id="telemetry-json" name="telemetry" rows="16" th:text="${sampleTelemetry}"></textarea>
+    <div style="margin-top: 0.5rem;">
+        <button type="submit">Submit</button>
+    </div>
+</form>
+<pre id="telemetry-result" class="result"></pre>
+
+<script>
+    document.getElementById('telemetry-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const resultEl = document.getElementById('telemetry-result');
+        let body;
+        try {
+            body = JSON.parse(document.getElementById('telemetry-json').value);
+        } catch (err) {
+            resultEl.textContent = 'Invalid JSON: ' + err;
+            return;
+        }
+
+        fetch('/telemetry', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body),
+        })
+            .then(r => r.json())
+            .then(data => {
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                resultEl.textContent = 'Error: ' + err;
+            });
+    });
+</script>
+</body>
+</html>

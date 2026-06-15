@@ -1,0 +1,16 @@
+<layer>
+  <name>device_locations</name>
+  <id>LayerInfoImpl--1447cc19:19ec51520bb:-7ffa</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--71af9a7c:19ec43fd995:-8000</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--1447cc19:19ec51520bb:-7ffb</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2026-06-15 00:48:15.174 UTC</dateCreated>
+</layer>

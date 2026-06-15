@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Devices</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<h1>Devices</h1>
+<p th:text="${#lists.size(devices)} + ' devices'"></p>
+
+<table>
+    <thead>
+    <tr>
+        <th>Device ID</th>
+        <th>Merchant Category</th>
+        <th>Connectivity</th>
+        <th>Battery</th>
+        <th>Network</th>
+        <th>Provider</th>
+        <th>Location</th>
+        <th>Last Seen</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="device : ${devices}">
+        <td><a th:href="@{/support/devices/{id}(id=${device.deviceId})}" th:text="${device.deviceId}"></a></td>
+        <td th:text="${device.merchantCategoryName}"></td>
+        <td th:text="${device.connectivityStatus}" th:class="|status-${device.connectivityStatus}|"></td>
+        <td th:text="${device.batteryPct != null ? device.batteryPct + '%' : '-'}"></td>
+        <td th:text="${device.networkInterface}"></td>
+        <td th:text="${device.networkProvider}"></td>
+        <td th:text="${#numbers.formatDecimal(device.location.latitude, 1, 4)} + ', ' + ${#numbers.formatDecimal(device.location.longitude, 1, 4)}"></td>
+        <td th:text="${#temporals.format(device.lastSeen, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

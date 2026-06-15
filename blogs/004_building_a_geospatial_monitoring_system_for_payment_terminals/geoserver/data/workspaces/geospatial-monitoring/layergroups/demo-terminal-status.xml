@@ -1,8 +1,8 @@
 <layerGroup>
-  <id>LayerGroupInfoImpl--1447cc19:19ec8c34797:28ed</id>
-  <name>demo-basemap</name>
+  <id>LayerGroupInfoImpl--1447cc19:19ec51520bb:-7ff1</id>
+  <name>demo-terminal-status</name>
   <mode>SINGLE</mode>
-  <title>Base Map</title>
+  <title>Terminals by Connectivity Status</title>
   <enabled>true</enabled>
   <advertised>true</advertised>
   <workspace>
@@ -18,6 +18,9 @@
     <published type="layer">
       <id>LayerInfoImpl-53cf98dd:19ec4a28b17:-7ffb</id>
     </published>
+    <published type="layer">
+      <id>LayerInfoImpl--1447cc19:19ec51520bb:-7ffa</id>
+    </published>
   </publishables>
   <styles>
     <style>
@@ -29,13 +32,16 @@
     <style>
       <id>StyleInfoImpl-53cf98dd:19ec4a28b17:-7ff5</id>
     </style>
+    <style>
+      <id>StyleInfoImpl--1447cc19:19ec51520bb:-7ff5</id>
+    </style>
   </styles>
   <bounds>
-    <minx>-180.0</minx>
-    <maxx>180.0</maxx>
-    <miny>-90.0</miny>
-    <maxy>83.63410186767578</maxy>
+    <minx>110.0</minx>
+    <maxx>160.0</maxx>
+    <miny>-55.0</miny>
+    <maxy>-9.0</maxy>
     <crs>EPSG:4326</crs>
   </bounds>
-  <dateCreated>2026-06-15 01:34:33.717 UTC</dateCreated>
+  <dateCreated>2026-06-15 00:51:22.359 UTC</dateCreated>
 </layerGroup>

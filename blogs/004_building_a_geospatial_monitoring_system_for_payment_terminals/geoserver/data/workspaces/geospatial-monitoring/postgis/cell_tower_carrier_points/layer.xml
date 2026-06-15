@@ -1,0 +1,16 @@
+<layer>
+  <name>cell_tower_carrier_points</name>
+  <id>LayerInfoImpl--1447cc19:19ec51520bb:-7ff8</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--71af9a7c:19ec43fd995:-8000</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--1447cc19:19ec51520bb:-7ff9</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2026-06-15 00:49:01.670 UTC</dateCreated>
+</layer>

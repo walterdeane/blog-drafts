@@ -1,28 +1,28 @@
 <featureType>
-  <id>FeatureTypeInfoImpl-53cf98dd:19ec4a28b17:-7fe0</id>
-  <name>ocean_background</name>
-  <nativeName>ocean_background</nativeName>
+  <id>FeatureTypeInfoImpl--1447cc19:19ec51520bb:-7ffb</id>
+  <name>device_locations</name>
+  <nativeName>device_locations</nativeName>
   <namespace>
     <id>NamespaceInfoImpl-17f3397:19ec4572e5d:-7ffb</id>
   </namespace>
-  <title>Ocean background</title>
+  <title>Device Locations</title>
   <keywords>
     <string>features</string>
-    <string>ocean_background</string>
+    <string>device_locations</string>
   </keywords>
   <srs>EPSG:4326</srs>
   <nativeBoundingBox>
-    <minx>-180.0</minx>
-    <maxx>180.0</maxx>
-    <miny>-90.0</miny>
-    <maxy>90.0</maxy>
+    <minx>110.26574508589619</minx>
+    <maxx>159.15571679836023</maxx>
+    <miny>-52.90765359400984</miny>
+    <maxy>-12.041945057195884</maxy>
     <crs>EPSG:4326</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>-180.0</minx>
-    <maxx>180.0</maxx>
-    <miny>-90.0</miny>
-    <maxy>90.0</maxy>
+    <minx>110.26574508589619</minx>
+    <maxx>159.15571679836023</maxx>
+    <miny>-52.90765359400984</miny>
+    <maxy>-12.041945057195884</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>

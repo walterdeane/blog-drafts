@@ -1,6 +1,6 @@
 <style>
-  <id>StyleInfoImpl-53cf98dd:19ec4a28b17:-7fe1</id>
-  <name>ocean-blue</name>
+  <id>StyleInfoImpl--1447cc19:19ec51520bb:-7ff5</id>
+  <name>terminal-status</name>
   <workspace>
     <id>WorkspaceInfoImpl-17f3397:19ec4572e5d:-7ffc</id>
   </workspace>
@@ -8,6 +8,6 @@
   <languageVersion>
     <version>1.0.0</version>
   </languageVersion>
-  <filename>ocean-blue.sld</filename>
-  <dateCreated>2026-06-14 07:33:11.895 UTC</dateCreated>
+  <filename>terminal-status.sld</filename>
+  <dateCreated>2026-06-15 00:50:55.264 UTC</dateCreated>
 </style>

@@ -1,0 +1,56 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--1447cc19:19ec51520bb:-7ff7</id>
+  <name>cell_tower_carrier_coverage</name>
+  <nativeName>cell_tower_carrier_coverage</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-17f3397:19ec4572e5d:-7ffb</id>
+  </namespace>
+  <title>Cell Tower Coverage by Carrier (range circles)</title>
+  <keywords>
+    <string>features</string>
+    <string>cell_tower_carrier_coverage</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>105.66566425774316</minx>
+    <maxx>167.99295663876313</maxx>
+    <miny>-43.62654568960211</miny>
+    <maxy>-10.186257991951601</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>105.66566425774316</minx>
+    <maxx>167.99295663876313</maxx>
+    <miny>-43.62654568960211</miny>
+    <maxy>-10.186257991951601</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="JDBC_VIRTUAL_TABLE">
+      <virtualTable>
+        <name>cell_tower_carrier_coverage</name>
+        <sql>SELECT mcc, mnc, lac, cell_id, range_m, resolved_at, CASE WHEN mnc IN (1, 11, 71, 72) THEN &apos;Telstra&apos; WHEN mnc IN (2, 90) THEN &apos;Optus&apos; ELSE &apos;Other&apos; END AS carrier, coverage::geometry AS geom FROM cell_tower_cache WHERE mcc = 505 AND coverage IS NOT NULL
+</sql>
+        <escapeSql>false</escapeSql>
+        <geometry>
+          <name>geom</name>
+          <type>Polygon</type>
+          <srid>4326</srid>
+        </geometry>
+      </virtualTable>
+    </entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-17f3397:19ec4572e5d:-7ffa</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

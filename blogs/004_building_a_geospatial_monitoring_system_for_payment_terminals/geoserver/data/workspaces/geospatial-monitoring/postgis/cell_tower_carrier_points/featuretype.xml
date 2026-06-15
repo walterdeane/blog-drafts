@@ -1,0 +1,56 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--1447cc19:19ec51520bb:-7ff9</id>
+  <name>cell_tower_carrier_points</name>
+  <nativeName>cell_tower_carrier_points</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-17f3397:19ec4572e5d:-7ffb</id>
+  </namespace>
+  <title>Cell Towers by Carrier (points)</title>
+  <keywords>
+    <string>features</string>
+    <string>cell_tower_carrier_points</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>105.6748</minx>
+    <maxx>167.9827</maxx>
+    <miny>-43.5822</miny>
+    <maxy>-10.1953</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>105.6748</minx>
+    <maxx>167.9827</maxx>
+    <miny>-43.5822</miny>
+    <maxy>-10.1953</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="JDBC_VIRTUAL_TABLE">
+      <virtualTable>
+        <name>cell_tower_carrier_points</name>
+        <sql>SELECT mcc, mnc, lac, cell_id, range_m, resolved_at, CASE WHEN mnc IN (1, 11, 71, 72) THEN &apos;Telstra&apos; WHEN mnc IN (2, 90) THEN &apos;Optus&apos; ELSE &apos;Other&apos; END AS carrier, location::geometry AS geom FROM cell_tower_cache WHERE mcc = 505
+</sql>
+        <escapeSql>false</escapeSql>
+        <geometry>
+          <name>geom</name>
+          <type>Point</type>
+          <srid>4326</srid>
+        </geometry>
+      </virtualTable>
+    </entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-17f3397:19ec4572e5d:-7ffa</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

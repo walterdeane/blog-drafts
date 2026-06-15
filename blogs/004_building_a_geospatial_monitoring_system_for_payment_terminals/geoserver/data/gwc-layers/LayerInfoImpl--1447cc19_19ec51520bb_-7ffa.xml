@@ -1,8 +1,8 @@
 <GeoServerTileLayer>
-  <id>LayerInfoImpl-53cf98dd:19ec4a28b17:-7fdf</id>
+  <id>LayerInfoImpl--1447cc19:19ec51520bb:-7ffa</id>
   <enabled>true</enabled>
   <inMemoryCached>true</inMemoryCached>
-  <name>geospatial-monitoring:ocean_background</name>
+  <name>geospatial-monitoring:device_locations</name>
   <mimeFormats>
     <string>image/png</string>
     <string>image/jpeg</string>
@@ -10,25 +10,9 @@
   <gridSubsets>
     <gridSubset>
       <gridSetName>EPSG:4326</gridSetName>
-      <extent>
-        <coords>
-          <double>-180.0</double>
-          <double>-90.0</double>
-          <double>180.0</double>
-          <double>90.0</double>
-        </coords>
-      </extent>
     </gridSubset>
     <gridSubset>
       <gridSetName>EPSG:900913</gridSetName>
-      <extent>
-        <coords>
-          <double>-2.003750834E7</double>
-          <double>-2.003750834E7</double>
-          <double>2.003750834E7</double>
-          <double>2.003750834E7</double>
-        </coords>
-      </extent>
     </gridSubset>
   </gridSubsets>
   <metaWidthHeight>
@@ -42,7 +26,7 @@
       <key>STYLES</key>
       <defaultValue></defaultValue>
       <availableStyles class="sorted-set"/>
-      <defaultStyle>geospatial-monitoring:ocean-blue</defaultStyle>
+      <defaultStyle>point</defaultStyle>
     </styleParameterFilter>
   </parameterFilters>
   <gutter>0</gutter>

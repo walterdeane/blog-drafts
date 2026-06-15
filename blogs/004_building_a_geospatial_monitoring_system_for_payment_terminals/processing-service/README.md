@@ -280,6 +280,187 @@ curl -X POST http://localhost:8081/telemetry \
 with GPS unavailable) - in that case resolution proceeds through the cache/provider
 steps as usual.
 
+## Device telemetry, connectivity & sales API
+
+Beyond location resolution, `device_locations` also stores per-device business/telemetry
+attributes (merchant category, battery, memory, network interface/provider, SIM IDs, and
+current connectivity status), and two related tables track history over time:
+
+- `device_connectivity_events` - an LWT ("last will and testament") style audit log of
+  `online` / `expected_offline` / `unexpected_offline` status changes, foreign-keyed to
+  `device_locations`.
+- `device_sales_summary` - a daily transaction count / sales total per device, foreign-keyed
+  to `device_locations`, used for heatmap-style geospatial queries.
+
+`postgis/init/004_seed_demo_devices.sql` seeds **1,000 demo devices** (`terminal-1001`
+through `terminal-2000`) with randomized telemetry and locations weighted towards major
+Australian cities (Sydney, Melbourne, Brisbane, Perth, Adelaide, and others), each with
+30 days of sales summary history and an initial connectivity event.
+
+### `GET /api/devices`
+
+Lists all devices with a summary of their current telemetry:
+
+```json
+[
+  {
+    "device_id": "terminal-1001",
+    "location": {"latitude": -33.8688, "longitude": 151.2093},
+    "merchant_category_name": "Fast Food Restaurant",
+    "connectivity_status": "online",
+    "battery_pct": 87,
+    "network_interface": "WIFI",
+    "network_provider": "Optus",
+    "last_seen": "2026-06-14T03:00:00Z"
+  }
+]
+```
+
+### `GET /api/devices/{deviceId}`
+
+Returns the full device record, including all telemetry attributes. 404 if unknown.
+
+```json
+{
+  "device_id": "terminal-1001",
+  "location": {"latitude": -33.8688, "longitude": 151.2093},
+  "source": "seed",
+  "last_seen": "2026-06-14T03:00:00Z",
+  "connectivity_status": "online",
+  "connectivity_status_at": "2026-06-13T20:00:00Z",
+  "telemetry": {
+    "merchant_category_code": 5814,
+    "merchant_category_name": "Fast Food Restaurant",
+    "battery_pct": 87,
+    "memory_used_pct": 42,
+    "network_interface": "WIFI",
+    "network_provider": "Optus",
+    "sim1_id": "896100000000000001",
+    "sim2_id": "896100000000000002",
+    "active_sim_slot": 1
+  }
+}
+```
+
+### `PUT /api/devices/{deviceId}/telemetry`
+
+Updates a device's telemetry attributes (all fields optional; omitted/`null` fields are
+written as `null`). Returns the updated device, or 404 if unknown.
+
+```bash
+curl -X PUT http://localhost:8081/api/devices/terminal-1001/telemetry \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "merchant_category_code": 5812,
+    "merchant_category_name": "Restaurant",
+    "battery_pct": 65,
+    "memory_used_pct": 50,
+    "network_interface": "MOBILE",
+    "network_provider": "Telstra",
+    "sim1_id": "896100000000000001",
+    "sim2_id": "896100000000000002",
+    "active_sim_slot": 2
+  }'
+```
+
+### `POST /api/devices/{deviceId}/connectivity`
+
+Simulates an LWT-style connectivity message - `online`, `expected_offline` (clean
+disconnect/shutdown), or `unexpected_offline` (broker-detected drop). Updates the
+device's current `connectivity_status`/`connectivity_status_at` and appends a row to
+`device_connectivity_events`. Returns the recorded event, or 404 if unknown.
+
+```bash
+curl -X POST http://localhost:8081/api/devices/terminal-1001/connectivity \
+  -H 'Content-Type: application/json' \
+  -d '{"status": "unexpected_offline"}'
+```
+
+```json
+{"status": "unexpected_offline", "occurred_at": "2026-06-14T03:05:00Z"}
+```
+
+### `GET /api/devices/{deviceId}/connectivity`
+
+Returns the device's connectivity history (most recent first, up to 50 entries):
+
+```json
+[
+  {"status": "unexpected_offline", "occurred_at": "2026-06-14T03:05:00Z"},
+  {"status": "online", "occurred_at": "2026-06-13T20:00:00Z"}
+]
+```
+
+### `GET /api/devices/{deviceId}/sales`
+
+Returns the device's daily sales summary, oldest first:
+
+```json
+[
+  {"summary_date": "2026-05-15", "transaction_count": 34, "sales_total_cents": 5780000},
+  {"summary_date": "2026-05-16", "transaction_count": 41, "sales_total_cents": 6650000}
+]
+```
+
+### `GET /api/sales/heatmap`
+
+A sample geospatial query: total sales per device across its summary history, ordered by
+sales descending - useful for building a heatmap. Optionally restrict to a bounding box
+with `minLat`, `minLon`, `maxLat`, `maxLon`:
+
+```bash
+curl 'http://localhost:8081/api/sales/heatmap?minLat=-34.5&minLon=150.0&maxLat=-33.0&maxLon=151.5'
+```
+
+```json
+[
+  {
+    "device_id": "terminal-1001",
+    "location": {"latitude": -33.8688, "longitude": 151.2093},
+    "sales_total_cents": 178500000
+  }
+]
+```
+
+## Home page
+
+`/` is a landing page linking to the support pages and demo map pages below. The
+GeoServer base URL used by the demo map pages defaults to
+`http://localhost:8080/geoserver` and can be overridden with the `GEOSERVER_URL`
+environment variable.
+
+## Support pages
+
+Server-rendered pages (Thymeleaf) for demoing and exercising the API above without a
+separate frontend:
+
+- `/support` - lists all devices with their current telemetry and connectivity status,
+  linking to each device's detail page.
+- `/support/devices/{deviceId}` - device detail, an editable telemetry form (calls
+  `PUT /api/devices/{deviceId}/telemetry`), connectivity history, and sales summary.
+- `/support/connectivity` - LWT connectivity simulator: pick a device and a status
+  (`online` / `expected_offline` / `unexpected_offline`) and submit, calling
+  `POST /api/devices/{deviceId}/connectivity`. Shows the resulting history.
+- `/support/location-telemetry` - a pre-filled, editable sample telemetry JSON payload
+  that can be submitted to `POST /telemetry` to simulate a device reporting cell tower,
+  WiFi access point, and/or GPS readings.
+
+## Demo map pages
+
+Interactive [Leaflet](https://leafletjs.com/) maps rendering WMS layers from the
+`geospatial-monitoring` GeoServer workspace, each with a `demo-basemap` backdrop, a
+layer toggle control, and a legend matching the layers' SLD styles:
+
+- `/demo/terminal-status` - all `device_locations`, colored by `connectivity_status`
+  (online = green, expected offline = orange, unexpected offline = red) using the
+  `terminal-status` style, with one toggleable layer per status (each filtered via
+  `CQL_FILTER=connectivity_status='...'`).
+- `/demo/terminal-network` - `cell_tower_carrier_points` and
+  `cell_tower_carrier_coverage` (cell towers and their coverage ranges, colored by
+  carrier: Telstra = blue, Optus = orange, other = grey) plus `device_locations`
+  using the `terminal-provider` style (colored by SIM provider). Coverage circles are
+  toggled off by default.
+
 ## Building and unit tests
 
 ```bash

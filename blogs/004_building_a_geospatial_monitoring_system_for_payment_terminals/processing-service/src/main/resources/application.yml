@@ -12,3 +12,5 @@ app:
     provider: ${GEOLOCATION_PROVIDER:stub}
   google:
     geolocation-api-key: ${GOOGLE_GEOLOCATION_API_KEY:}
+  geoserver:
+    url: ${GEOSERVER_URL:http://localhost:8080/geoserver}

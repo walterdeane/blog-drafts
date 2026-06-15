@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Device ' + ${device.deviceId}"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<h1 th:text="${device.deviceId}"></h1>
+
+<table>
+    <tbody>
+    <tr>
+        <th>Location</th>
+        <td th:text="${#numbers.formatDecimal(device.location.latitude, 1, 6)} + ', ' + ${#numbers.formatDecimal(device.location.longitude, 1, 6)}"></td>
+    </tr>
+    <tr>
+        <th>Location source</th>
+        <td th:text="${device.source}"></td>
+    </tr>
+    <tr>
+        <th>Last seen</th>
+        <td th:text="${#temporals.format(device.lastSeen, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    </tr>
+    <tr>
+        <th>Connectivity</th>
+        <td th:text="${device.connectivityStatus}" th:class="|status-${device.connectivityStatus}|"></td>
+    </tr>
+    <tr>
+        <th>Connectivity since</th>
+        <td th:text="${#temporals.format(device.connectivityStatusAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Telemetry</h2>
+<form id="telemetry-form" class="telemetry-form" th:inline="javascript">
+    <label for="merchant_category_code">Merchant category</label>
+    <select id="merchant_category_code" name="merchant_category_code">
+        <option value="">-</option>
+        <option th:each="category : ${merchantCategories}"
+                th:value="${category.first}"
+                th:attr="data-name=${category.second}"
+                th:selected="${device.telemetry.merchantCategoryCode == category.first}"
+                th:text="${category.first} + ' - ' + ${category.second}"></option>
+    </select>
+
+    <label for="battery_pct">Battery (%)</label>
+    <input type="number" id="battery_pct" name="battery_pct" min="0" max="100" th:value="${device.telemetry.batteryPct}">
+
+    <label for="memory_used_pct">Memory used (%)</label>
+    <input type="number" id="memory_used_pct" name="memory_used_pct" min="0" max="100" th:value="${device.telemetry.memoryUsedPct}">
+
+    <label for="network_interface">Network interface</label>
+    <select id="network_interface" name="network_interface">
+        <option th:each="ni : ${networkInterfaces}"
+                th:value="${ni}"
+                th:selected="${ni == device.telemetry.networkInterface}"
+                th:text="${ni}"></option>
+    </select>
+
+    <label for="network_provider">Network provider</label>
+    <select id="network_provider" name="network_provider">
+        <option th:each="np : ${networkProviders}"
+                th:value="${np}"
+                th:selected="${np == device.telemetry.networkProvider}"
+                th:text="${np}"></option>
+    </select>
+
+    <label for="sim1_id">SIM 1 ID</label>
+    <input type="text" id="sim1_id" name="sim1_id" th:value="${device.telemetry.sim1Id}">
+
+    <label for="sim2_id">SIM 2 ID</label>
+    <input type="text" id="sim2_id" name="sim2_id" th:value="${device.telemetry.sim2Id}">
+
+    <label for="active_sim_slot">Active SIM slot</label>
+    <select id="active_sim_slot" name="active_sim_slot">
+        <option value="1" th:selected="${device.telemetry.activeSimSlot == 1}">1</option>
+        <option value="2" th:selected="${device.telemetry.activeSimSlot == 2}">2</option>
+    </select>
+
+    <button type="submit">Save telemetry</button>
+</form>
+<pre id="telemetry-result" class="result"></pre>
+
+<h2>Connectivity history</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Status</th>
+        <th>Occurred at</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="event : ${connectivityHistory}">
+        <td th:text="${event.status}" th:class="|status-${event.status}|"></td>
+        <td th:text="${#temporals.format(event.occurredAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Sales summary</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Transactions</th>
+        <th>Sales total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="day : ${salesSummary}">
+        <td th:text="${#temporals.format(day.summaryDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${day.transactionCount}"></td>
+        <td th:text="'$' + ${#numbers.formatDecimal(day.salesTotalCents / 100.0, 1, 2)}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const deviceId = /*[[${device.deviceId}]]*/ '';
+
+    document.getElementById('telemetry-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = e.target;
+
+        const categorySelect = form.elements['merchant_category_code'];
+        const selectedCategory = categorySelect.options[categorySelect.selectedIndex];
+
+        const body = {
+            merchant_category_code: categorySelect.value ? parseInt(categorySelect.value, 10) : null,
+            merchant_category_name: categorySelect.value ? selectedCategory.dataset.name : null,
+            battery_pct: form.elements['battery_pct'].value !== '' ? parseInt(form.elements['battery_pct'].value, 10) : null,
+            memory_used_pct: form.elements['memory_used_pct'].value !== '' ? parseInt(form.elements['memory_used_pct'].value, 10) : null,
+            network_interface: form.elements['network_interface'].value,
+            network_provider: form.elements['network_provider'].value,
+            sim1_id: form.elements['sim1_id'].value,
+            sim2_id: form.elements['sim2_id'].value,
+            active_sim_slot: parseInt(form.elements['active_sim_slot'].value, 10),
+        };
+
+        fetch(`/api/devices/${deviceId}/telemetry`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body),
+        })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('telemetry-result').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                document.getElementById('telemetry-result').textContent = 'Error: ' + err;
+            });
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

@@ -30,19 +30,3 @@ UPDATE populated_places SET is_capital = true
 WHERE adm0name = 'Australia'
   AND name IN ('Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Hobart', 'Darwin', 'Canberra');
 SQL
-
-# Ocean/water backdrop for the base map: a single world-extent polygon drawn
-# as the bottom-most layer in the demo-basemap layer group, so any area not
-# covered by land layers renders as blue water.
-"${PSQL[@]}" <<'SQL'
-CREATE TABLE ocean_background (
-    gid serial PRIMARY KEY,
-    geom geometry(Polygon, 4326)
-);
-
-INSERT INTO ocean_background (geom) VALUES (
-    ST_MakeEnvelope(-180, -90, 180, 90, 4326)
-);
-
-CREATE INDEX ocean_background_geom_idx ON ocean_background USING gist(geom);
-SQL

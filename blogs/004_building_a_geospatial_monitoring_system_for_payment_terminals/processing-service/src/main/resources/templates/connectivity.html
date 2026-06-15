@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Connectivity Simulator</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<h1>Connectivity Simulator</h1>
+<p>
+    Simulate an LWT-style connectivity message for a device. <code>online</code> and
+    <code>expected_offline</code> represent a normal connect/disconnect, while
+    <code>unexpected_offline</code> represents a will message delivered by the broker
+    when a device drops without disconnecting cleanly. Each message updates the
+    device's current status and is recorded in its connectivity history below.
+</p>
+
+<form id="connectivity-form" class="inline-form">
+    <label for="device-select">Device</label>
+    <select id="device-select" name="deviceId">
+        <option th:each="device : ${devices}" th:value="${device.deviceId}" th:text="${device.deviceId}"></option>
+    </select>
+
+    <label for="status-select">Status</label>
+    <select id="status-select" name="status">
+        <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option>
+    </select>
+
+    <button type="submit">Send</button>
+</form>
+<pre id="connectivity-result" class="result"></pre>
+
+<h2>History</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Status</th>
+        <th>Occurred at</th>
+    </tr>
+    </thead>
+    <tbody id="history-body"></tbody>
+</table>
+
+<script>
+    const form = document.getElementById('connectivity-form');
+    const resultEl = document.getElementById('connectivity-result');
+    const historyBody = document.getElementById('history-body');
+
+    function loadHistory(deviceId) {
+        fetch(`/api/devices/${deviceId}/connectivity`)
+            .then(r => r.json())
+            .then(events => {
+                historyBody.innerHTML = '';
+                events.forEach(event => {
+                    const row = document.createElement('tr');
+
+                    const statusCell = document.createElement('td');
+                    statusCell.textContent = event.status;
+                    statusCell.className = `status-${event.status}`;
+                    row.appendChild(statusCell);
+
+                    const occurredCell = document.createElement('td');
+                    occurredCell.textContent = event.occurred_at;
+                    row.appendChild(occurredCell);
+
+                    historyBody.appendChild(row);
+                });
+            });
+    }
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const deviceId = form.elements['deviceId'].value;
+        const status = form.elements['status'].value;
+
+        fetch(`/api/devices/${deviceId}/connectivity`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({status: status}),
+        })
+            .then(r => r.json())
+            .then(data => {
+                resultEl.textContent = JSON.stringify(data, null, 2);
+                loadHistory(deviceId);
+            })
+            .catch(err => {
+                resultEl.textContent = 'Error: ' + err;
+            });
+    });
+
+    document.getElementById('device-select').addEventListener('change', function () {
+        loadHistory(this.value);
+    });
+
+    if (form.elements['deviceId'].value) {
+        loadHistory(form.elements['deviceId'].value);
+    }
+</script>
+</body>
+</html>

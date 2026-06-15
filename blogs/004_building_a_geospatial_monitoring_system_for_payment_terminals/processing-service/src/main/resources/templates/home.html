@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Geospatial Monitoring</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<h1>Geospatial Monitoring System</h1>
+<p>Proof-of-concept demo: device fleet support tools and sample maps.</p>
+
+<h2>Support</h2>
+<div class="card-grid">
+    <a class="card" href="/support">
+        <strong>Devices</strong>
+        <p>Browse the demo fleet's current telemetry, connectivity status, and sales history.</p>
+    </a>
+    <a class="card" href="/support/connectivity">
+        <strong>Connectivity Simulator</strong>
+        <p>Simulate LWT-style online / expected offline / unexpected offline status changes.</p>
+    </a>
+    <a class="card" href="/support/location-telemetry">
+        <strong>Location Telemetry</strong>
+        <p>Submit a sample telemetry payload (cell tower, WiFi, GPS) to <code>/telemetry</code>.</p>
+    </a>
+</div>
+
+<h2>Demo Maps</h2>
+<p>Sample maps of the demo fleet and cell tower network, with legends and layer controls.</p>
+<div class="card-grid">
+    <a class="card" th:each="map : ${demoMaps}" th:href="${map.url}">
+        <strong th:text="${map.title}"></strong>
+        <p th:text="${map.description}"></p>
+    </a>
+</div>
+</body>
+</html>

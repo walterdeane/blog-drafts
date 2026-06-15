@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminals by Connectivity Status</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<h1>Terminals by Connectivity Status</h1>
+<p>
+    The demo device fleet across Australia, colored by connectivity status. Use the
+    layer toggle (top right) to isolate a status, pan/zoom to explore, and click a
+    terminal to see its details.
+</p>
+
+<div id="map" class="map-container"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script th:src="@{/js/demo-map.js}"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const wmsUrl = /*[[${wmsUrl}]]*/ 'http://localhost:8080/geoserver/geospatial-monitoring/wms';
+    /*]]>*/
+
+    const map = L.map('map', {center: [-25.27, 133.78], zoom: 4, minZoom: 3});
+
+    L.tileLayer.wms(wmsUrl, {
+        layers: 'geospatial-monitoring:demo-basemap',
+        format: 'image/png',
+        version: '1.1.0',
+    }).addTo(map);
+
+    function statusLayer(status) {
+        return L.tileLayer.wms(wmsUrl, {
+            layers: 'geospatial-monitoring:device_locations',
+            styles: 'terminal-status',
+            cql_filter: 'connectivity_status=\'' + status + '\'',
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.0',
+        });
+    }
+
+    const online = statusLayer('online').addTo(map);
+    const expectedOffline = statusLayer('expected_offline').addTo(map);
+    const unexpectedOffline = statusLayer('unexpected_offline').addTo(map);
+
+    L.control.layers(null, {
+        'Online': online,
+        'Expected offline': expectedOffline,
+        'Unexpected offline': unexpectedOffline,
+    }, {collapsed: false}).addTo(map);
+
+    // Query layer covering all statuses, used for click info regardless of which
+    // status layers are currently toggled on.
+    const deviceQueryLayer = L.tileLayer.wms(wmsUrl, {
+        layers: 'geospatial-monitoring:device_locations',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0',
+    });
+
+    map.on('click', function (e) {
+        fetch(getFeatureInfoUrl(map, deviceQueryLayer, e.latlng))
+            .then((res) => res.json())
+            .then((data) => {
+                if (!data.features || data.features.length === 0) return;
+                const feature = data.features[0];
+                const deviceId = feature.id.split('.')[1];
+                L.popup()
+                    .setLatLng(e.latlng)
+                    .setContent(deviceProperties(deviceId, feature.properties))
+                    .openOn(map);
+            });
+    });
+
+    const legend = L.control({position: 'bottomright'});
+    legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'legend');
+        div.innerHTML =
+            '<strong>Connectivity status</strong>' +
+            '<div><span class="swatch circle" style="background:#2E7D32"></span>Online</div>' +
+            '<div><span class="swatch circle" style="background:#EF6C00"></span>Expected offline</div>' +
+            '<div><span class="swatch circle" style="background:#C62828"></span>Unexpected offline</div>';
+        return div;
+    };
+    legend.addTo(map);
+</script>
+</body>
+</html>

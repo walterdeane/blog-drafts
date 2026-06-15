@@ -1,0 +1,173 @@
+body {
+    font-family: system-ui, sans-serif;
+    margin: 1.5rem;
+    color: #1a1a1a;
+}
+
+h1, h2 {
+    margin-top: 1.5rem;
+}
+
+.nav {
+    display: flex;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ccc;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+th {
+    background: #f4f4f4;
+}
+
+form.telemetry-form {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    max-width: 28rem;
+    margin-bottom: 1rem;
+}
+
+form.inline-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+textarea {
+    width: 100%;
+    max-width: 40rem;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+pre.result {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    max-width: 40rem;
+    white-space: pre-wrap;
+}
+
+.status-online {
+    color: #2e7d32;
+}
+
+.status-expected_offline {
+    color: #ef6c00;
+}
+
+.status-unexpected_offline {
+    color: #c62828;
+    font-weight: bold;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.card {
+    display: block;
+    border: 1px solid #ddd;
+    border-radius: 0.4rem;
+    padding: 0.75rem 1rem;
+    color: inherit;
+    text-decoration: none;
+    background: #fafafa;
+}
+
+.card:hover {
+    border-color: #999;
+    background: #f0f0f0;
+}
+
+.card strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.map-container {
+    height: 70vh;
+    min-height: 480px;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.legend {
+    background: rgba(255, 255, 255, 0.92);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.legend strong {
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.legend-section + .legend-section {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #ddd;
+}
+
+.legend .swatch {
+    display: inline-block;
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.legend .swatch.circle {
+    border-radius: 50%;
+}
+
+.legend .swatch.translucent {
+    opacity: 0.3;
+    border-style: dashed;
+}
+
+.popup {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.popup strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.popup a {
+    display: inline-block;
+    margin-top: 0.25rem;
+}

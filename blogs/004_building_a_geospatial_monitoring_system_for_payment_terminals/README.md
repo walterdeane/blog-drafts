@@ -31,6 +31,11 @@ This brings up PostGIS, GeoServer, and the processing service together:
   master password before being exposed beyond localhost)
 - The processing service is available on `localhost:8081` - see
   [processing-service/README.md](processing-service/README.md) for its API
+- A home page at [http://localhost:8081](http://localhost:8081) links to both the
+  support pages and the demo maps below
+- Support pages for browsing/editing the demo device fleet are available at
+  [http://localhost:8081/support](http://localhost:8081/support) - see
+  [processing-service/README.md](processing-service/README.md#support-pages)
 
 The `postgis/init` directory contains the initial schema (PostGIS extension, device
 location table, cell tower cache table) and seed data, applied automatically on first
@@ -45,6 +50,12 @@ start against an empty database volume:
   populated places shapefiles from `src-data/` into `sal_boundaries`,
   `country_boundaries`, and `populated_places`, reprojecting all to EPSG:4326 for
   GeoServer to publish as base map layers
+- `004_seed_demo_devices.sql` - seeds 1,000 demo devices (`terminal-1001` -
+  `terminal-2000`) with randomized telemetry, locations weighted towards major
+  Australian cities, 30 days of sales summary history, and an initial connectivity
+  event each, for exercising the device/connectivity/sales API and `/support` pages.
+  Merchant categories are drawn from the full reference list in
+  `src-data/mcc_codes.csv`
 
 To use the Google Geolocation API fallback, export `GOOGLE_GEOLOCATION_API_KEY` before
 running `docker compose up`.
@@ -68,6 +79,38 @@ that folder with its default data directory. Any workspaces, stores, layers, sty
 `geoserver/data/` and can be committed, so cloning the repo and running
 `docker compose up` brings up a GeoServer instance that's already configured with the
 WFS layers, styles, and base maps used by this PoC.
+
+### Demo maps
+
+The home page ([http://localhost:8081](http://localhost:8081)) links to two
+interactive Leaflet map pages backed by the `geospatial-monitoring` GeoServer
+workspace - see
+[Demo map pages](processing-service/README.md#demo-map-pages) for details:
+
+- `/demo/terminal-status` - all `device_locations`, colored by `connectivity_status`
+  (online = green, expected offline = orange, unexpected offline = red), matching the
+  status colors used on the `/support` pages, with a per-status layer toggle and
+  legend.
+- `/demo/terminal-network` - cell towers across Australia from `cell_tower_cache` (mcc
+  505), colored by carrier (Telstra = blue, Optus = orange, other = grey) derived from
+  `mnc` via the `cell_tower_carrier_points` and `cell_tower_carrier_coverage` SQL view
+  feature types, with each tower's coverage range (`coverage`) drawn as a
+  semi-translucent circle in the same carrier color, plus `device_locations` colored
+  by `network_provider` (SIM provider). Layer toggles and a legend cover all of these.
+
+Both pages use the `demo-basemap` layer group (country boundaries, SAL
+suburbs/localities, and populated places) as the shared backdrop, served as WMS tiles
+from GeoServer. The underlying layers and styles can also be previewed directly from
+the GeoServer admin UI (Layer Preview) or via WMS `GetMap`, e.g.:
+
+```text
+http://localhost:8080/geoserver/geospatial-monitoring/wms?service=WMS&version=1.1.0&request=GetMap&layers=geospatial-monitoring:device_locations&styles=terminal-status&bbox=110,-45,155,-10&width=600&height=600&srs=EPSG:4326&format=image/png
+```
+
+The `demo-terminal-status` and `demo-terminal-network` layer groups in GeoServer
+pre-date these pages and remain available for direct layer-group previews, but the
+`/demo/*` pages compose the individual layers and styles directly for finer-grained
+toggles and legends.
 
 ## Contents
 
