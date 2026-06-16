@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component
 class StubGeolocationClient : GeolocationClient {
     override val providerName = "stub"
 
-    override fun resolve(cellTowers: List<CellTower>, wifiAccessPoints: List<WifiAccessPoint>): Location {
+    override fun resolve(cellTowers: List<CellTower>, wifiAccessPoints: List<WifiAccessPoint>, radioType: String?): Location {
         cellTowers.firstOrNull()?.let { tower ->
             val latitude = ((tower.mcc * 31 + tower.lac) % 18000) / 100.0 - 90.0
             val longitude = ((tower.mnc * 31 + tower.cellId) % 36000) / 100.0 - 180.0

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 
@@ -29,15 +30,17 @@ class GoogleGeolocationClient(
 
     private val restClient = restClientBuilder.baseUrl(GOOGLE_GEOLOCATION_URL).build()
 
-    override fun resolve(cellTowers: List<CellTower>, wifiAccessPoints: List<WifiAccessPoint>): Location {
+    override fun resolve(cellTowers: List<CellTower>, wifiAccessPoints: List<WifiAccessPoint>, radioType: String?): Location {
         val payload = GeolocationRequest(
-            considerIp = false,
+            considerIp = true,
+            radioType = radioType,
             cellTowers = cellTowers.map {
                 GeolocationRequest.CellTowerSignal(
                     mobileCountryCode = it.mcc,
                     mobileNetworkCode = it.mnc,
                     locationAreaCode = it.lac,
                     cellId = it.cellId,
+                    signalStrength = it.signalStrengthDbm,
                 )
             },
             // `WifiAccessPoint.connected` has no equivalent in Google's API and is
@@ -50,13 +53,17 @@ class GoogleGeolocationClient(
             },
         )
 
-        val response = restClient.post()
-            .uri { it.queryParam("key", apiKey).build() }
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(payload)
-            .retrieve()
-            .body<GeolocationResponse>()
-            ?: error("Empty response from Google Geolocation API")
+        val response = try {
+            restClient.post()
+                .uri { it.queryParam("key", apiKey).build() }
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .retrieve()
+                .body<GeolocationResponse>()
+                ?: error("Empty response from Google Geolocation API")
+        } catch (e: HttpClientErrorException.NotFound) {
+            throw GeolocationUnavailableException("Google could not determine location for the provided signals")
+        }
 
         return Location(
             latitude = response.location.lat,
@@ -66,16 +73,20 @@ class GoogleGeolocationClient(
     }
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class GeolocationRequest(
     val considerIp: Boolean,
+    val radioType: String?,
     val cellTowers: List<CellTowerSignal>,
     val wifiAccessPoints: List<WifiAccessPointSignal>,
 ) {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     data class CellTowerSignal(
         val mobileCountryCode: Int,
         val mobileNetworkCode: Int,
         val locationAreaCode: Int,
         val cellId: Int,
+        val signalStrength: Int? = null,
     )
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

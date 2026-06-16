@@ -15,5 +15,5 @@ interface GeolocationClient {
     /** Identifies this provider; recorded as the cache's `source` for resolved locations. */
     val providerName: String
 
-    fun resolve(cellTowers: List<CellTower>, wifiAccessPoints: List<WifiAccessPoint>): Location
+    fun resolve(cellTowers: List<CellTower>, wifiAccessPoints: List<WifiAccessPoint>, radioType: String? = null): Location
 }

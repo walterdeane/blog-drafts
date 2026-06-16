@@ -41,6 +41,7 @@ services:
       POSTGIS_DB: geospatial
       POSTGIS_USER: geospatial
       POSTGIS_PASSWORD: geospatial
+      GEOLOCATION_PROVIDER: ${GEOLOCATION_PROVIDER:-stub}
       GOOGLE_GEOLOCATION_API_KEY: ${GOOGLE_GEOLOCATION_API_KEY:-}
     ports:
       - "8081:8081"

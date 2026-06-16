@@ -3,12 +3,16 @@ package com.geomonitor.processing.telemetry
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.geomonitor.processing.cache.LocationCache
 import com.geomonitor.processing.geolocation.GeolocationClient
+import com.geomonitor.processing.geolocation.GeolocationUnavailableException
 import com.geomonitor.processing.model.DeviceTelemetry
 import com.geomonitor.processing.model.Location
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -36,6 +40,11 @@ class TelemetryController(
 ) {
     private val logger = LoggerFactory.getLogger(TelemetryController::class.java)
 
+    @ExceptionHandler(GeolocationUnavailableException::class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    fun handleGeolocationUnavailable(e: GeolocationUnavailableException) =
+        mapOf("error" to "location_unresolvable", "detail" to e.message)
+
     @PostMapping
     fun process(@RequestBody telemetry: DeviceTelemetry): ResolvedLocationResponse {
         val (location, source) = resolveLocation(telemetry)
@@ -52,18 +61,20 @@ class TelemetryController(
             return gpsLocation to "gps"
         }
 
-        locationCache.getDeviceLocation(telemetry.deviceId)?.let { return it to "cache" }
+        if (!telemetry.bypassCache) {
+            locationCache.getDeviceLocation(telemetry.deviceId)?.let { return it to "cache" }
 
-        for (tower in telemetry.cellTowers) {
-            locationCache.getCellTowerLocation(tower)?.let { return it to "cache" }
+            for (tower in telemetry.cellTowers) {
+                locationCache.getCellTowerLocation(tower)?.let { return it to "cache" }
+            }
+
+            val (connected, scanned) = telemetry.wifiAccessPoints.partition { it.connected }
+            for (accessPoint in connected + scanned) {
+                locationCache.getWifiAccessPointLocation(accessPoint)?.let { return it to "cache" }
+            }
         }
 
-        val (connected, scanned) = telemetry.wifiAccessPoints.partition { it.connected }
-        for (accessPoint in connected + scanned) {
-            locationCache.getWifiAccessPointLocation(accessPoint)?.let { return it to "cache" }
-        }
-
-        val location = geolocationClient.resolve(telemetry.cellTowers, telemetry.wifiAccessPoints)
+        val location = geolocationClient.resolve(telemetry.cellTowers, telemetry.wifiAccessPoints, telemetry.radioType)
         for (tower in telemetry.cellTowers) {
             locationCache.storeCellTowerLocation(tower, location)
         }

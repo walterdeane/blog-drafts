@@ -8,6 +8,7 @@ data class CellTower(
     val mnc: Int,
     val lac: Int,
     @JsonProperty("cell_id") val cellId: Int,
+    @JsonProperty("signal_strength") val signalStrengthDbm: Int? = null,
 )
 
 data class WifiAccessPoint(
@@ -28,4 +29,6 @@ data class DeviceTelemetry(
     @JsonProperty("cell_towers") val cellTowers: List<CellTower> = emptyList(),
     @JsonProperty("wifi_access_points") val wifiAccessPoints: List<WifiAccessPoint> = emptyList(),
     @JsonProperty("gps_location") val gpsLocation: Location? = null,
+    @JsonProperty("radio_type") val radioType: String? = null,
+    @JsonProperty("bypass_cache") val bypassCache: Boolean = false,
 )
