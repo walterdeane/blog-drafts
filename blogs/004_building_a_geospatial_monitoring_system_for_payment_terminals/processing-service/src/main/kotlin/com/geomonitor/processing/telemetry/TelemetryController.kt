@@ -24,7 +24,11 @@ import org.springframework.web.bind.annotation.RestController
  *    access point cache for the APs reported alongside it. A cell tower's coverage
  *    area is much larger than GPS accuracy, so a single device's fix isn't a good
  *    estimate of "the cell tower's location" for other devices and is not used to
- *    update the cell tower cache.
+ *    update the cell tower cache. Originally I thought I could triangulate a device's cell towers
+ *    but many sdks only return the connected tower's id and have incorrect ids for the other towers. 
+ *    If your sdk does return multiple towers, 
+ *    you could potentially use the GPS location to better estimate the towers' locations and 
+ *    update the cache accordingly, but that's outside the scope of this demo.
  * 1. Check whether the device already has a known location.
  * 2. Check the cell tower cache for the device's current tower(s).
  * 3. Check the WiFi access point cache, prioritizing the AP the device is currently
